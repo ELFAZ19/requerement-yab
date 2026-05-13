@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Debug Test</title>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        button { padding: 10px 20px; margin: 10px; font-size: 14px; cursor: pointer; }
+        #output { margin-top: 20px; padding: 20px; border: 1px solid #ccc; background: #f5f5f5; }
+        .success { color: green; }
+        .error { color: red; }
+    </style>
+</head>
+<body>
+    <h1>Button Debug Test</h1>
+    
+    <button onclick="test1()">Test 1: Simple Alert</button>
+    <button onclick="test2()">Test 2: Check Marked.js</button>
+    <button onclick="test3()">Test 3: Generate Markdown</button>
+    <button onclick="test4()">Test 4: Copy to Clipboard</button>
+    <button onclick="test5()">Test 5: Download File</button>
+    
+    <div id="output">Click buttons above to test...</div>
+
+    <script>
+        function log(msg, isError = false) {
+            const output = document.getElementById('output');
+            const p = document.createElement('p');
+            p.className = isError ? 'error' : 'success';
+            p.textContent = msg;
+            output.appendChild(p);
+        }
+
+        function test1() {
+            alert('✅ Button 1 works!');
+            log('✅ Test 1: Button click works');
+        }
+
+        function test2() {
+            if (typeof marked !== 'undefined') {
+                log('✅ Test 2: Marked.js is loaded');
+                const md = '# Hello\n\nThis is **bold**.';
+                const html = marked.parse(md);
+                log('✅ Marked.parse works: ' + html.substring(0, 50) + '...');
+            } else {
+                log('❌ Test 2: Marked.js NOT loaded', true);
+            }
+        }
+
+        function test3() {
+            try {
+                const markdown = `# Test Proposal
+
+**Name:** John Doe
+**Email:** john@example.com
+
+## Features
+- Feature 1
+- Feature 2
+
+**Total:** 10,000 ETB`;
+                
+                log('✅ Test 3: Markdown generated (' + markdown.length + ' chars)');
+                console.log(markdown);
+            } catch (err) {
+                log('❌ Test 3 Error: ' + err.message, true);
+            }
+        }
+
+        function test4() {
+            try {
+                const text = 'Test clipboard content';
+                if (navigator.clipboard && navigator.clipboard.writeText) {
+                    navigator.clipboard.writeText(text).then(() => {
+                        log('✅ Test 4: Clipboard API works');
+                        alert('✅ Text copied to clipboard!');
+                    }).catch(err => {
+                        log('❌ Test 4 Clipboard Error: ' + err.message, true);
+                        testFallbackCopy(text);
+                    });
+                } else {
+                    log('⚠️ Test 4: Clipboard API not available, trying fallback');
+                    testFallbackCopy(text);
+                }
+            } catch (err) {
+                log('❌ Test 4 Error: ' + err.message, true);
+            }
+        }
+
+        function testFallbackCopy(text) {
+            const textarea = document.createElement('textarea');
+            textarea.value = text;
+            textarea.style.position = 'fixed';
+            textarea.style.opacity = '0';
+            document.body.appendChild(textarea);
+            textarea.select();
+            try {
+                document.execCommand('copy');
+                log('✅ Test 4: Fallback copy works');
+                alert('✅ Text copied using fallback method!');
+            } catch (err) {
+                log('❌ Test 4 Fallback Error: ' + err.message, true);
+            }
+            document.body.removeChild(textarea);
+        }
+
+        function test5() {
+            try {
+                const content = 'Test file content\nLine 2\nLine 3';
+                const filename = 'test-' + Date.now() + '.txt';
+                
+                const blob = new Blob([content], { type: 'text/plain' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = filename;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+                
+                log('✅ Test 5: File download triggered (' + filename + ')');
+                alert('✅ File download should start!');
+            } catch (err) {
+                log('❌ Test 5 Error: ' + err.message, true);
+            }
+        }
+
+        // Auto-run on load
+        window.onload = function() {
+            log('Page loaded successfully');
+            log('Browser: ' + navigator.userAgent.substring(0, 50) + '...');
+        };
+    </script>
+</body>
+</html>

@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Button Test - Yabu Dev</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        body {
+            padding: 20px;
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 20px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+        }
+        .test-result {
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 5px;
+            font-family: monospace;
+        }
+        .success {
+            background: var(--green-bg);
+            color: var(--green);
+        }
+        .error {
+            background: var(--red-bg);
+            color: var(--red);
+        }
+    </style>
+</head>
+<body>
+    <h1>Button Functionality Test</h1>
+    
+    <div class="test-section">
+        <h2>1. Theme Toggle Test</h2>
+        <button class="btn btn-dark" onclick="testThemeToggle()">Test Theme Toggle</button>
+        <div id="theme-result" class="test-result"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>2. Panel Switch Test</h2>
+        <button class="btn btn-gold" onclick="testPanelSwitch()">Test Switch to Project Panel</button>
+        <div id="panel-result" class="test-result"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>3. Generate Preview Test</h2>
+        <button class="btn btn-green" onclick="testGeneratePreview()">Test Generate Preview</button>
+        <div id="preview-result" class="test-result"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>4. Function Availability Check</h2>
+        <button class="btn btn-ghost" onclick="checkFunctions()">Check All Functions</button>
+        <div id="function-result" class="test-result"></div>
+    </div>
+
+    <script src="app.js"></script>
+    <script>
+        function testThemeToggle() {
+            const result = document.getElementById('theme-result');
+            try {
+                if (typeof toggleTheme === 'function') {
+                    toggleTheme();
+                    result.className = 'test-result success';
+                    result.textContent = '✅ SUCCESS: toggleTheme() executed';
+                } else {
+                    result.className = 'test-result error';
+                    result.textContent = '❌ ERROR: toggleTheme is not a function';
+                }
+            } catch (err) {
+                result.className = 'test-result error';
+                result.textContent = '❌ ERROR: ' + err.message;
+            }
+        }
+
+        function testPanelSwitch() {
+            const result = document.getElementById('panel-result');
+            try {
+                if (typeof switchPanel === 'function') {
+                    result.className = 'test-result success';
+                    result.textContent = '✅ SUCCESS: switchPanel() is available (not executing to avoid errors)';
+                } else {
+                    result.className = 'test-result error';
+                    result.textContent = '❌ ERROR: switchPanel is not a function';
+                }
+            } catch (err) {
+                result.className = 'test-result error';
+                result.textContent = '❌ ERROR: ' + err.message;
+            }
+        }
+
+        function testGeneratePreview() {
+            const result = document.getElementById('preview-result');
+            try {
+                if (typeof generatePreview === 'function') {
+                    result.className = 'test-result success';
+                    result.textContent = '✅ SUCCESS: generatePreview() is available';
+                } else {
+                    result.className = 'test-result error';
+                    result.textContent = '❌ ERROR: generatePreview is not a function';
+                }
+            } catch (err) {
+                result.className = 'test-result error';
+                result.textContent = '❌ ERROR: ' + err.message;
+            }
+        }
+
+        function checkFunctions() {
+            const result = document.getElementById('function-result');
+            const functions = [
+                'toggleTheme',
+                'switchPanel',
+                'generatePreview',
+                'init',
+                'collectData',
+                'calcPricing',
+                'calcProgress',
+                'resetAll',
+                'saveJSON',
+                'downloadMarkdown',
+                'copyMarkdown',
+                'togglePreviewMode'
+            ];
+            
+            let output = '';
+            let allGood = true;
+            
+            functions.forEach(funcName => {
+                if (typeof window[funcName] === 'function') {
+                    output += `✅ ${funcName}\n`;
+                } else {
+                    output += `❌ ${funcName} - NOT FOUND\n`;
+                    allGood = false;
+                }
+            });
+            
+            result.className = allGood ? 'test-result success' : 'test-result error';
+            result.textContent = output;
+        }
+
+        // Auto-check on load
+        window.addEventListener('load', function() {
+            console.log('✅ Page loaded, running auto-check...');
+            setTimeout(checkFunctions, 500);
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Setup Test - Yabu Dev</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .test-card {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        .test-card h2 {
+            margin-top: 0;
+            color: #1a1a2e;
+        }
+        .status {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 4px;
+            font-size: 14px;
+            font-weight: 600;
+            margin-left: 10px;
+        }
+        .status.pass {
+            background: #d4edda;
+            color: #155724;
+        }
+        .status.fail {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        .status.pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+        button {
+            background: #1a1a2e;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            margin: 5px;
+        }
+        button:hover {
+            background: #2a2a4e;
+        }
+        .result {
+            margin-top: 15px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-left: 4px solid #1a1a2e;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 13px;
+            white-space: pre-wrap;
+        }
+        .error {
+            color: #dc3545;
+        }
+        .success {
+            color: #28a745;
+        }
+        .info {
+            color: #17a2b8;
+        }
+    </style>
+</head>
+<body>
+    <h1>🧪 Setup Verification Test</h1>
+    <p>This page tests if all files are properly set up and working.</p>
+
+    <div class="test-card">
+        <h2>1. File Structure <span class="status pending" id="status-files">Testing...</span></h2>
+        <p>Checking if all required files exist and are accessible...</p>
+        <div class="result" id="result-files">Running tests...</div>
+    </div>
+
+    <div class="test-card">
+        <h2>2. External Libraries <span class="status pending" id="status-libs">Testing...</span></h2>
+        <p>Checking if marked.js and other dependencies loaded...</p>
+        <div class="result" id="result-libs">Running tests...</div>
+    </div>
+
+    <div class="test-card">
+        <h2>3. JavaScript Functions <span class="status pending" id="status-funcs">Testing...</span></h2>
+        <p>Verifying all critical functions are defined...</p>
+        <div class="result" id="result-funcs">Running tests...</div>
+    </div>
+
+    <div class="test-card">
+        <h2>4. Interactive Tests</h2>
+        <p>Click buttons to test functionality:</p>
+        <button onclick="testMarkdownGeneration()">Test Markdown Generation</button>
+        <button onclick="testClipboard()">Test Clipboard</button>
+        <button onclick="testDownload()">Test Download</button>
+        <div class="result" id="result-interactive" style="display:none;"></div>
+    </div>
+
+    <div class="test-card">
+        <h2>5. Open Main Application</h2>
+        <p>If all tests pass, you're ready to use the app!</p>
+        <button onclick="window.location.href='index.html'" style="background:#28a745;font-size:16px;padding:12px 24px;">
+            ✅ Open Yabu Dev Tool
+        </button>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script>
+        // Test 1: File Structure
+        async function testFiles() {
+            const results = [];
+            const files = ['styles.css', 'app.js', 'index.html'];
+            
+            for (const file of files) {
+                try {
+                    const response = await fetch(file, { method: 'HEAD' });
+                    if (response.ok) {
+                        results.push(`✅ ${file} - Found (${response.headers.get('content-length') || 'unknown'} bytes)`);
+                    } else {
+                        results.push(`❌ ${file} - Not found (${response.status})`);
+                    }
+                } catch (err) {
+                    results.push(`❌ ${file} - Error: ${err.message}`);
+                }
+            }
+            
+            const allPass = results.every(r => r.startsWith('✅'));
+            document.getElementById('status-files').className = 'status ' + (allPass ? 'pass' : 'fail');
+            document.getElementById('status-files').textContent = allPass ? 'PASS' : 'FAIL';
+            document.getElementById('result-files').innerHTML = results.join('\n');
+        }
+
+        // Test 2: External Libraries
+        function testLibraries() {
+            const results = [];
+            
+            if (typeof marked !== 'undefined') {
+                results.push('✅ marked.js - Loaded successfully');
+                try {
+                    const test = marked.parse('# Test');
+                    results.push('✅ marked.parse() - Working correctly');
+                } catch (err) {
+                    results.push('❌ marked.parse() - Error: ' + err.message);
+                }
+            } else {
+                results.push('❌ marked.js - Not loaded');
+            }
+            
+            const allPass = results.every(r => r.startsWith('✅'));
+            document.getElementById('status-libs').className = 'status ' + (allPass ? 'pass' : 'fail');
+            document.getElementById('status-libs').textContent = allPass ? 'PASS' : 'FAIL';
+            document.getElementById('result-libs').innerHTML = results.join('\n');
+        }
+
+        // Test 3: JavaScript Functions
+        async function testFunctions() {
+            // Wait a bit for app.js to load
+            await new Promise(resolve => setTimeout(resolve, 500));
+            
+            const results = [];
+            const requiredFunctions = [
+                'toggleTheme',
+                'generateMarkdown',
+                'togglePreviewMode',
+                'downloadMarkdown',
+                'copyMarkdown',
+                'printProposal',
+                'collectData',
+                'init'
+            ];
+            
+            for (const funcName of requiredFunctions) {
+                if (typeof window[funcName] === 'function') {
+                    results.push(`✅ ${funcName}() - Defined`);
+                } else {
+                    results.push(`❌ ${funcName}() - NOT FOUND`);
+                }
+            }
+            
+            const allPass = results.every(r => r.startsWith('✅'));
+            document.getElementById('status-funcs').className = 'status ' + (allPass ? 'pass' : 'fail');
+            document.getElementById('status-funcs').textContent = allPass ? 'PASS' : 'FAIL';
+            document.getElementById('result-funcs').innerHTML = results.join('\n');
+        }
+
+        // Interactive Tests
+        function testMarkdownGeneration() {
+            const resultDiv = document.getElementById('result-interactive');
+            resultDiv.style.display = 'block';
+            
+            try {
+                const markdown = `# Test Proposal\n\n**Client:** Test Client\n**Total:** 10,000 ETB`;
+                resultDiv.innerHTML = '<span class="success">✅ Markdown generation works!</span>\n\n' + markdown;
+            } catch (err) {
+                resultDiv.innerHTML = '<span class="error">❌ Error: ' + err.message + '</span>';
+            }
+        }
+
+        function testClipboard() {
+            const resultDiv = document.getElementById('result-interactive');
+            resultDiv.style.display = 'block';
+            
+            const testText = 'Test clipboard content - ' + new Date().toISOString();
+            
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(testText).then(() => {
+                    resultDiv.innerHTML = '<span class="success">✅ Clipboard API works! Text copied.</span>';
+                }).catch(err => {
+                    resultDiv.innerHTML = '<span class="error">❌ Clipboard error: ' + err.message + '</span>';
+                });
+            } else {
+                resultDiv.innerHTML = '<span class="info">⚠️ Clipboard API not available (may need HTTPS)</span>';
+            }
+        }
+
+        function testDownload() {
+            const resultDiv = document.getElementById('result-interactive');
+            resultDiv.style.display = 'block';
+            
+            try {
+                const content = 'Test file content\nGenerated at: ' + new Date().toISOString();
+                const blob = new Blob([content], { type: 'text/plain' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'test-' + Date.now() + '.txt';
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+                
+                resultDiv.innerHTML = '<span class="success">✅ Download works! Check your downloads folder.</span>';
+            } catch (err) {
+                resultDiv.innerHTML = '<span class="error">❌ Download error: ' + err.message + '</span>';
+            }
+        }
+
+        // Run tests on load
+        window.addEventListener('load', async () => {
+            await testFiles();
+            testLibraries();
+            await testFunctions();
+        });
+    </script>
+
+    <script src="app.js"></script>
+</body>
+</html>
