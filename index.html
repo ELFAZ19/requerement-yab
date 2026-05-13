@@ -1,1430 +1,1331 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Client Discovery & Pricing Tool</title>
-    <link
-        href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap"
-        rel="stylesheet">
-    <style>
-        :root {
-            --bg: #0a0a0f;
-            --bg2: #11111a;
-            --bg3: #181824;
-            --surface: #1e1e2e;
-            --surface2: #25253a;
-            --border: rgba(255, 255, 255, 0.07);
-            --border2: rgba(255, 255, 255, 0.13);
-            --accent: #7c6af7;
-            --accent2: #a594ff;
-            --accent-glow: rgba(124, 106, 247, 0.18);
-            --green: #3ecf8e;
-            --green-bg: rgba(62, 207, 142, 0.1);
-            --amber: #f5a623;
-            --amber-bg: rgba(245, 166, 35, 0.1);
-            --red: #ff5e5e;
-            --red-bg: rgba(255, 94, 94, 0.1);
-            --text: #e8e8f0;
-            --text2: #9090b0;
-            --text3: #55556a;
-            --radius: 12px;
-            --radius-sm: 8px;
-            --radius-lg: 18px;
-        }
-
-        *,
-        *::before,
-        *::after {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-
-        body {
-            font-family: 'DM Sans', sans-serif;
-            background: var(--bg);
-            color: var(--text);
-            min-height: 100vh;
-            font-size: 15px;
-            line-height: 1.6;
-        }
-
-        /* Subtle grid bg */
-        body::before {
-            content: '';
-            position: fixed;
-            inset: 0;
-            background-image:
-                linear-gradient(rgba(124, 106, 247, 0.03) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(124, 106, 247, 0.03) 1px, transparent 1px);
-            background-size: 40px 40px;
-            pointer-events: none;
-            z-index: 0;
-        }
-
-        .app {
-            position: relative;
-            z-index: 1;
-            max-width: 1100px;
-            margin: 0 auto;
-            padding: 2rem 1.5rem 6rem;
-        }
-
-        /* Header */
-        .header {
-            display: flex;
-            align-items: flex-start;
-            justify-content: space-between;
-            gap: 1rem;
-            margin-bottom: 2.5rem;
-            flex-wrap: wrap;
-        }
-
-        .header-left h1 {
-            font-family: 'Syne', sans-serif;
-            font-size: clamp(1.6rem, 4vw, 2.4rem);
-            font-weight: 800;
-            letter-spacing: -0.02em;
-            color: #fff;
-            line-height: 1.15;
-        }
-
-        .header-left h1 span {
-            color: var(--accent2);
-        }
-
-        .header-left p {
-            color: var(--text2);
-            font-size: 14px;
-            margin-top: 6px;
-        }
-
-        .header-btns {
-            display: flex;
-            gap: 10px;
-            flex-shrink: 0;
-            flex-wrap: wrap;
-        }
-
-        .btn {
-            display: inline-flex;
-            align-items: center;
-            gap: 7px;
-            padding: 10px 18px;
-            border-radius: var(--radius-sm);
-            font-family: 'DM Sans', sans-serif;
-            font-size: 13px;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.2s;
-            border: none;
-            text-decoration: none;
-        }
-
-        .btn-ghost {
-            background: transparent;
-            border: 1px solid var(--border2);
-            color: var(--text2);
-        }
-
-        .btn-ghost:hover {
-            border-color: var(--accent);
-            color: var(--accent2);
-            background: var(--accent-glow);
-        }
-
-        .btn-accent {
-            background: var(--accent);
-            color: #fff;
-        }
-
-        .btn-accent:hover {
-            background: var(--accent2);
-            transform: translateY(-1px);
-        }
-
-        .btn-green {
-            background: var(--green);
-            color: #0a0a0f;
-        }
-
-        .btn-green:hover {
-            filter: brightness(1.1);
-            transform: translateY(-1px);
-        }
-
-        /* Step tabs */
-        .steps-nav {
-            display: flex;
-            gap: 4px;
-            background: var(--bg2);
-            border: 1px solid var(--border);
-            border-radius: var(--radius);
-            padding: 4px;
-            margin-bottom: 2rem;
-            overflow-x: auto;
-            scrollbar-width: none;
-        }
-
-        .steps-nav::-webkit-scrollbar {
-            display: none;
-        }
-
-        .step-tab {
-            flex: 1;
-            min-width: 120px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            padding: 10px 14px;
-            border-radius: var(--radius-sm);
-            font-size: 13px;
-            font-weight: 500;
-            color: var(--text3);
-            cursor: pointer;
-            transition: all 0.2s;
-            white-space: nowrap;
-            background: transparent;
-            border: none;
-        }
-
-        .step-tab.active {
-            background: var(--surface);
-            color: var(--accent2);
-            box-shadow: 0 0 0 1px var(--accent) inset;
-        }
-
-        .step-tab:hover:not(.active) {
-            color: var(--text2);
-            background: var(--surface);
-        }
-
-        .step-num {
-            width: 22px;
-            height: 22px;
-            border-radius: 50%;
-            background: var(--surface2);
-            color: var(--text3);
-            font-size: 11px;
-            font-weight: 700;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-shrink: 0;
-        }
-
-        .step-tab.active .step-num {
-            background: var(--accent);
-            color: #fff;
-        }
-
-        .step-tab.done .step-num {
-            background: var(--green);
-            color: #0a0a0f;
-        }
-
-        .step-tab.done {
-            color: var(--text2);
-        }
-
-        /* Panels */
-        .panel {
-            display: none;
-            animation: fadeIn 0.25s ease;
-        }
-
-        .panel.active {
-            display: block;
-        }
-
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(6px);
-            }
-
-            to {
-                opacity: 1;
-                transform: none;
-            }
-        }
-
-        /* Section title */
-        .sec-title {
-            font-family: 'Syne', sans-serif;
-            font-size: 1.1rem;
-            font-weight: 700;
-            color: #fff;
-            margin-bottom: 0.25rem;
-        }
-
-        .sec-sub {
-            font-size: 13px;
-            color: var(--text2);
-            margin-bottom: 1.5rem;
-        }
-
-        /* Grid layouts */
-        .grid-2 {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 1rem;
-        }
-
-        .grid-3 {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-            gap: 1rem;
-        }
-
-        /* Card */
-        .card {
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: var(--radius-lg);
-            padding: 1.25rem 1.5rem;
-        }
-
-        .card-title {
-            font-family: 'Syne', sans-serif;
-            font-size: 13px;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.08em;
-            color: var(--text2);
-            margin-bottom: 1rem;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .card-title svg {
-            opacity: 0.5;
-        }
-
-        /* Form fields */
-        .field {
-            margin-bottom: 1rem;
-        }
-
-        .field label {
-            display: block;
-            font-size: 12px;
-            font-weight: 500;
-            color: var(--text2);
-            margin-bottom: 6px;
-            letter-spacing: 0.03em;
-        }
-
-        .field input[type="text"],
-        .field input[type="email"],
-        .field input[type="tel"],
-        .field input[type="number"],
-        .field select,
-        .field textarea {
-            width: 100%;
-            background: var(--bg3);
-            border: 1px solid var(--border2);
-            border-radius: var(--radius-sm);
-            padding: 10px 14px;
-            font-family: 'DM Sans', sans-serif;
-            font-size: 14px;
-            color: var(--text);
-            transition: border-color 0.2s, box-shadow 0.2s;
-            outline: none;
-            resize: vertical;
-        }
-
-        .field input:focus,
-        .field select:focus,
-        .field textarea:focus {
-            border-color: var(--accent);
-            box-shadow: 0 0 0 3px var(--accent-glow);
-        }
-
-        .field select {
-            appearance: none;
-            cursor: pointer;
-        }
-
-        .field textarea {
-            min-height: 80px;
-        }
-
-        /* Checkbox features */
-        .feature-group {
-            margin-bottom: 1.25rem;
-        }
-
-        .feature-group-title {
-            font-size: 12px;
-            font-weight: 600;
-            letter-spacing: 0.06em;
-            text-transform: uppercase;
-            color: var(--text3);
-            margin-bottom: 8px;
-            padding-bottom: 6px;
-            border-bottom: 1px solid var(--border);
-        }
-
-        .feature-item {
-            display: flex;
-            align-items: flex-start;
-            gap: 12px;
-            padding: 10px 12px;
-            border-radius: var(--radius-sm);
-            border: 1px solid var(--border);
-            background: var(--bg3);
-            margin-bottom: 6px;
-            cursor: pointer;
-            transition: all 0.15s;
-        }
-
-        .feature-item:hover {
-            border-color: var(--border2);
-            background: var(--surface2);
-        }
-
-        .feature-item.checked {
-            border-color: var(--accent);
-            background: var(--accent-glow);
-        }
-
-        .feature-item input[type="checkbox"] {
-            display: none;
-        }
-
-        .custom-check {
-            width: 18px;
-            height: 18px;
-            border-radius: 5px;
-            border: 1.5px solid var(--border2);
-            background: var(--bg);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-shrink: 0;
-            margin-top: 1px;
-            transition: all 0.15s;
-        }
-
-        .feature-item.checked .custom-check {
-            background: var(--accent);
-            border-color: var(--accent);
-        }
-
-        .custom-check svg {
-            display: none;
-        }
-
-        .feature-item.checked .custom-check svg {
-            display: block;
-        }
-
-        .feature-info {
-            flex: 1;
-        }
-
-        .feature-name {
-            font-size: 14px;
-            font-weight: 500;
-            color: var(--text);
-        }
-
-        .feature-desc {
-            font-size: 12px;
-            color: var(--text2);
-            margin-top: 1px;
-        }
-
-        .feature-price {
-            font-size: 13px;
-            font-weight: 600;
-            color: var(--accent2);
-            flex-shrink: 0;
-            white-space: nowrap;
-        }
-
-        /* Pricing summary */
-        .summary-sticky {
-            position: sticky;
-            top: 1rem;
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: var(--radius-lg);
-            padding: 1.5rem;
-            overflow: hidden;
-        }
-
-        .summary-sticky::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 3px;
-            background: linear-gradient(90deg, var(--accent), var(--accent2));
-        }
-
-        .summary-total {
-            font-family: 'Syne', sans-serif;
-            font-size: 2.2rem;
-            font-weight: 800;
-            color: #fff;
-            line-height: 1;
-        }
-
-        .summary-total small {
-            font-size: 13px;
-            color: var(--text2);
-            font-family: 'DM Sans', sans-serif;
-            font-weight: 400;
-        }
-
-        .summary-line {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 7px 0;
-            border-bottom: 1px solid var(--border);
-            font-size: 13px;
-        }
-
-        .summary-line:last-child {
-            border-bottom: none;
-        }
-
-        .summary-line .lbl {
-            color: var(--text2);
-        }
-
-        .summary-line .val {
-            font-weight: 500;
-            color: var(--text);
-        }
-
-        .deposit-box {
-            background: var(--green-bg);
-            border: 1px solid rgba(62, 207, 142, 0.2);
-            border-radius: var(--radius-sm);
-            padding: 12px;
-            margin-top: 1rem;
-        }
-
-        .deposit-box .d-label {
-            font-size: 11px;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.06em;
-            color: var(--green);
-        }
-
-        .deposit-box .d-val {
-            font-size: 1.4rem;
-            font-weight: 700;
-            color: var(--green);
-            font-family: 'Syne', sans-serif;
-        }
-
-        /* Layout with sidebar */
-        .layout-with-sidebar {
-            display: grid;
-            grid-template-columns: 1fr 300px;
-            gap: 1.5rem;
-            align-items: start;
-        }
-
-        @media (max-width: 800px) {
-            .layout-with-sidebar {
-                grid-template-columns: 1fr;
-            }
-
-            .summary-sticky {
-                position: static;
-            }
-        }
-
-        /* Timeline slider */
-        .timeline-slider {
-            width: 100%;
-            accent-color: var(--accent);
-            cursor: pointer;
-            height: 4px;
-        }
-
-        /* Add-on rows */
-        .addon-row {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            padding: 8px 12px;
-            border-radius: var(--radius-sm);
-            background: var(--bg3);
-            border: 1px solid var(--border);
-            margin-bottom: 6px;
-        }
-
-        .addon-row input[type="checkbox"] {
-            accent-color: var(--accent);
-            width: 16px;
-            height: 16px;
-            cursor: pointer;
-        }
-
-        .addon-row .addon-lbl {
-            flex: 1;
-            font-size: 13px;
-            color: var(--text);
-        }
-
-        .addon-row .addon-price {
-            font-size: 13px;
-            font-weight: 600;
-            color: var(--amber);
-        }
-
-        .addon-row input[type="number"] {
-            width: 90px;
-            background: var(--bg);
-            border: 1px solid var(--border2);
-            border-radius: 6px;
-            padding: 4px 8px;
-            font-size: 13px;
-            color: var(--text);
-            font-family: 'DM Sans', sans-serif;
-            outline: none;
-        }
-
-        .addon-row input[type="number"]:focus {
-            border-color: var(--accent);
-        }
-
-        /* Progress bar */
-        .progress-wrap {
-            margin: 1rem 0;
-        }
-
-        .progress-label {
-            display: flex;
-            justify-content: space-between;
-            font-size: 12px;
-            color: var(--text2);
-            margin-bottom: 6px;
-        }
-
-        .progress-bar {
-            height: 4px;
-            background: var(--bg3);
-            border-radius: 99px;
-            overflow: hidden;
-        }
-
-        .progress-fill {
-            height: 100%;
-            background: linear-gradient(90deg, var(--accent), var(--accent2));
-            border-radius: 99px;
-            transition: width 0.4s ease;
-        }
-
-        /* Tag pills */
-        .pill {
-            display: inline-flex;
-            align-items: center;
-            gap: 5px;
-            padding: 3px 10px;
-            border-radius: 99px;
-            font-size: 12px;
-            font-weight: 500;
-        }
-
-        .pill-purple {
-            background: var(--accent-glow);
-            color: var(--accent2);
-            border: 1px solid rgba(124, 106, 247, 0.25);
-        }
-
-        .pill-green {
-            background: var(--green-bg);
-            color: var(--green);
-            border: 1px solid rgba(62, 207, 142, 0.25);
-        }
-
-        .pill-amber {
-            background: var(--amber-bg);
-            color: var(--amber);
-            border: 1px solid rgba(245, 166, 35, 0.25);
-        }
-
-        .pill-red {
-            background: var(--red-bg);
-            color: var(--red);
-            border: 1px solid rgba(255, 94, 94, 0.25);
-        }
-
-        /* Export preview */
-        .export-preview {
-            background: var(--bg2);
-            border: 1px solid var(--border);
-            border-radius: var(--radius);
-            padding: 1.5rem;
-            font-family: 'DM Mono', 'Courier New', monospace;
-            font-size: 13px;
-            color: var(--text2);
-            max-height: 400px;
-            overflow-y: auto;
-            white-space: pre-wrap;
-            line-height: 1.8;
-        }
-
-        /* Notice box */
-        .notice {
-            display: flex;
-            gap: 12px;
-            padding: 14px 16px;
-            border-radius: var(--radius-sm);
-            margin-bottom: 1rem;
-            align-items: flex-start;
-        }
-
-        .notice-amber {
-            background: var(--amber-bg);
-            border: 1px solid rgba(245, 166, 35, 0.2);
-        }
-
-        .notice-green {
-            background: var(--green-bg);
-            border: 1px solid rgba(62, 207, 142, 0.2);
-        }
-
-        .notice svg {
-            flex-shrink: 0;
-            margin-top: 1px;
-        }
-
-        .notice p {
-            font-size: 13px;
-            line-height: 1.5;
-        }
-
-        .notice-amber p {
-            color: var(--amber);
-        }
-
-        .notice-green p {
-            color: var(--green);
-        }
-
-        /* Separator */
-        hr {
-            border: none;
-            border-top: 1px solid var(--border);
-            margin: 1.5rem 0;
-        }
-
-        /* Responsive tweaks */
-        @media (max-width: 600px) {
-            .header {
-                flex-direction: column;
-            }
-
-            .header-btns {
-                width: 100%;
-            }
-
-            .btn {
-                flex: 1;
-                justify-content: center;
-            }
-        }
-
-        /* Scrollbar */
-        ::-webkit-scrollbar {
-            width: 6px;
-            height: 6px;
-        }
-
-        ::-webkit-scrollbar-track {
-            background: var(--bg);
-        }
-
-        ::-webkit-scrollbar-thumb {
-            background: var(--surface2);
-            border-radius: 99px;
-        }
-
-        /* Export actions */
-        .export-actions {
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-            margin-bottom: 1rem;
-        }
-
-        /* Rush badge */
-        .rush-badge {
-            display: inline-block;
-            background: var(--red-bg);
-            color: var(--red);
-            border: 1px solid rgba(255, 94, 94, 0.2);
-            border-radius: 99px;
-            font-size: 11px;
-            font-weight: 600;
-            padding: 2px 9px;
-            letter-spacing: 0.04em;
-        }
-
-        input[type="range"] {
-            -webkit-appearance: none;
-            appearance: none;
-            height: 4px;
-            border-radius: 99px;
-            background: var(--surface2);
-            cursor: pointer;
-        }
-
-        input[type="range"]::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            width: 16px;
-            height: 16px;
-            border-radius: 50%;
-            background: var(--accent);
-            cursor: pointer;
-            box-shadow: 0 0 0 3px var(--accent-glow);
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Yabu Dev — Client Discovery & Pricing Tool</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Playfair+Display:wght@700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #f7f6f3;
+  --bg2: #eeecea;
+  --bg3: #e6e4e0;
+  --surface: #ffffff;
+  --surface2: #f0eeeb;
+  --border: rgba(0,0,0,0.08);
+  --border2: rgba(0,0,0,0.14);
+  --accent: #1a1a2e;
+  --accent2: #c9a84c;
+  --accent3: #e8d5a3;
+  --text: #1a1a2e;
+  --text2: #5a5870;
+  --text3: #9896aa;
+  --green: #1a7a4a;
+  --green-bg: rgba(26,122,74,0.08);
+  --amber: #b8860b;
+  --amber-bg: rgba(184,134,11,0.08);
+  --red: #c0392b;
+  --red-bg: rgba(192,57,43,0.08);
+  --blue: #1a4fa0;
+  --blue-bg: rgba(26,79,160,0.08);
+  --shadow: 0 2px 16px rgba(0,0,0,0.06);
+  --shadow-lg: 0 8px 40px rgba(0,0,0,0.10);
+  --radius: 14px;
+  --radius-sm: 8px;
+  --radius-lg: 20px;
+  --font-display: 'Playfair Display', serif;
+  --font-body: 'Space Grotesk', sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+}
+[data-theme="dark"] {
+  --bg: #0f0e17;
+  --bg2: #16151f;
+  --bg3: #1e1d28;
+  --surface: #1e1d2e;
+  --surface2: #252436;
+  --border: rgba(255,255,255,0.07);
+  --border2: rgba(255,255,255,0.13);
+  --accent: #e8d5a3;
+  --accent2: #c9a84c;
+  --accent3: rgba(201,168,76,0.15);
+  --text: #f0eeeb;
+  --text2: #9896aa;
+  --text3: #55546a;
+  --green: #3ecf8e;
+  --green-bg: rgba(62,207,142,0.10);
+  --amber: #f5c842;
+  --amber-bg: rgba(245,200,66,0.10);
+  --red: #ff6b6b;
+  --red-bg: rgba(255,107,107,0.10);
+  --blue: #5b8cff;
+  --blue-bg: rgba(91,140,255,0.10);
+  --shadow: 0 2px 16px rgba(0,0,0,0.30);
+  --shadow-lg: 0 8px 40px rgba(0,0,0,0.40);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:var(--font-body);background:var(--bg);color:var(--text);min-height:100vh;font-size:15px;line-height:1.6;transition:background 0.3s,color 0.3s}
+body::before{content:'';position:fixed;inset:0;background-image:radial-gradient(circle at 20% 80%, rgba(201,168,76,0.04) 0%, transparent 50%),radial-gradient(circle at 80% 20%, rgba(26,26,46,0.03) 0%, transparent 50%);pointer-events:none;z-index:0}
+.app{position:relative;z-index:1;max-width:1160px;margin:0 auto;padding:2rem 1.5rem 6rem}
+
+/* HEADER */
+.header{display:flex;align-items:flex-start;justify-content:space-between;gap:1rem;margin-bottom:2rem;flex-wrap:wrap;padding-bottom:1.5rem;border-bottom:1px solid var(--border)}
+.header-brand{display:flex;align-items:center;gap:14px}
+.brand-logo{width:46px;height:46px;background:var(--accent);border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.brand-logo span{font-family:var(--font-display);font-size:18px;font-weight:700;color:var(--bg)}
+[data-theme="dark"] .brand-logo{background:var(--accent2)}
+[data-theme="dark"] .brand-logo span{color:var(--bg)}
+.brand-text h1{font-family:var(--font-display);font-size:1.5rem;font-weight:800;letter-spacing:-0.01em;color:var(--text);line-height:1.1}
+.brand-text p{font-size:12px;color:var(--text2);margin-top:3px;letter-spacing:0.02em}
+.header-actions{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+
+/* BUTTONS */
+.btn{display:inline-flex;align-items:center;gap:7px;padding:9px 16px;border-radius:var(--radius-sm);font-family:var(--font-body);font-size:13px;font-weight:500;cursor:pointer;transition:all 0.18s;border:none;text-decoration:none;letter-spacing:0.01em}
+.btn-ghost{background:transparent;border:1px solid var(--border2);color:var(--text2)}
+.btn-ghost:hover{border-color:var(--accent2);color:var(--accent2);background:var(--amber-bg)}
+.btn-dark{background:var(--accent);color:var(--bg);border:1px solid transparent}
+[data-theme="dark"] .btn-dark{background:var(--accent2);color:var(--bg)}
+.btn-dark:hover{opacity:0.88;transform:translateY(-1px);box-shadow:var(--shadow)}
+.btn-gold{background:var(--accent2);color:#fff;border:1px solid transparent}
+.btn-gold:hover{filter:brightness(1.08);transform:translateY(-1px);box-shadow:var(--shadow)}
+.btn-green{background:var(--green);color:#fff;border:1px solid transparent}
+.btn-green:hover{filter:brightness(1.1);transform:translateY(-1px)}
+.btn-sm{padding:7px 13px;font-size:12px}
+
+/* THEME TOGGLE */
+.theme-toggle{width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:var(--surface);border:1px solid var(--border2);cursor:pointer;transition:all 0.2s;color:var(--text2)}
+.theme-toggle:hover{background:var(--surface2);color:var(--accent2);border-color:var(--accent2)}
+.theme-toggle svg{transition:transform 0.4s}
+
+/* PROGRESS */
+.progress-wrap{margin-bottom:2rem}
+.progress-meta{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.progress-meta span{font-size:12px;color:var(--text2)}
+.progress-pct{font-size:12px;font-weight:600;color:var(--accent2)}
+.progress-bar{height:3px;background:var(--bg3);border-radius:99px;overflow:hidden}
+.progress-fill{height:100%;background:linear-gradient(90deg,var(--accent),var(--accent2));border-radius:99px;transition:width 0.4s cubic-bezier(.4,0,.2,1)}
+
+/* STEP TABS */
+.steps-nav{display:flex;gap:0;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:5px;margin-bottom:2rem;overflow-x:auto;scrollbar-width:none;box-shadow:var(--shadow)}
+.steps-nav::-webkit-scrollbar{display:none}
+.step-tab{flex:1;min-width:100px;display:flex;align-items:center;gap:7px;padding:9px 12px;border-radius:var(--radius-sm);font-size:12px;font-weight:500;color:var(--text3);cursor:pointer;transition:all 0.2s;white-space:nowrap;background:transparent;border:none;letter-spacing:0.01em}
+.step-tab.active{background:var(--accent);color:var(--bg)}
+[data-theme="dark"] .step-tab.active{background:var(--accent2);color:var(--bg)}
+.step-tab:hover:not(.active){color:var(--text);background:var(--surface2)}
+.step-num{width:20px;height:20px;border-radius:50%;background:var(--bg3);color:var(--text3);font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all 0.2s}
+.step-tab.active .step-num{background:rgba(255,255,255,0.25);color:inherit}
+.step-tab.done .step-num{background:var(--green);color:#fff}
+.step-tab.done{color:var(--text2)}
+
+/* PANELS */
+.panel{display:none;animation:fadeUp 0.25s ease}
+.panel.active{display:block}
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+
+/* TYPOGRAPHY */
+.sec-header{margin-bottom:1.5rem}
+.sec-title{font-family:var(--font-display);font-size:1.6rem;font-weight:700;color:var(--text);letter-spacing:-0.02em;line-height:1.2}
+.sec-sub{font-size:13px;color:var(--text2);margin-top:5px}
+
+/* CARDS */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:1.4rem;box-shadow:var(--shadow)}
+.card-header{font-size:11px;font-weight:600;letter-spacing:0.07em;text-transform:uppercase;color:var(--text3);margin-bottom:1.1rem;display:flex;align-items:center;gap:7px}
+.card-header svg{opacity:0.5}
+
+/* GRIDS */
+.grid-2{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:1rem}
+.grid-3{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1rem}
+
+/* FORM FIELDS */
+.field{margin-bottom:0.9rem}
+.field label{display:block;font-size:12px;font-weight:500;color:var(--text2);margin-bottom:5px;letter-spacing:0.02em}
+.field input[type="text"],.field input[type="email"],.field input[type="tel"],.field input[type="number"],.field select,.field textarea{width:100%;background:var(--bg2);border:1px solid var(--border2);border-radius:var(--radius-sm);padding:9px 12px;font-family:var(--font-body);font-size:13px;color:var(--text);transition:border-color 0.15s,box-shadow 0.15s;outline:none;resize:vertical}
+.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--accent2);box-shadow:0 0 0 3px var(--amber-bg)}
+.field select{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%239896aa' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center;cursor:pointer;padding-right:30px}
+.field textarea{min-height:80px}
+
+/* FEATURE ITEMS */
+.feature-group{margin-bottom:1.5rem}
+.feature-group-title{font-size:10px;font-weight:700;letter-spacing:0.10em;text-transform:uppercase;color:var(--text3);margin-bottom:8px;padding-bottom:6px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:6px}
+.feature-item{display:flex;align-items:flex-start;gap:11px;padding:10px 12px;border-radius:var(--radius-sm);border:1px solid var(--border);background:var(--bg2);margin-bottom:5px;cursor:pointer;transition:all 0.15s;user-select:none}
+.feature-item:hover{border-color:var(--border2);background:var(--surface2)}
+.feature-item.checked{border-color:var(--accent2);background:var(--amber-bg)}
+.feature-item input[type="checkbox"]{display:none}
+.custom-check{width:17px;height:17px;border-radius:5px;border:1.5px solid var(--border2);background:var(--surface);display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;transition:all 0.15s}
+.feature-item.checked .custom-check{background:var(--accent2);border-color:var(--accent2)}
+.custom-check svg{display:none}
+.feature-item.checked .custom-check svg{display:block}
+.feature-info{flex:1}
+.feature-name{font-size:13px;font-weight:500;color:var(--text)}
+.feature-desc{font-size:11px;color:var(--text2);margin-top:1px;line-height:1.4}
+.feature-price{font-size:12px;font-weight:600;color:var(--accent2);flex-shrink:0;font-family:var(--font-mono)}
+
+/* SIDEBAR */
+.layout-sidebar{display:grid;grid-template-columns:1fr 290px;gap:1.5rem;align-items:start}
+@media(max-width:820px){.layout-sidebar{grid-template-columns:1fr}.summary-sticky{position:static!important}}
+.summary-sticky{position:sticky;top:1rem;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:1.4rem;box-shadow:var(--shadow-lg);overflow:hidden}
+.summary-sticky::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--accent),var(--accent2))}
+.summary-total{font-family:var(--font-display);font-size:2rem;font-weight:700;color:var(--text);line-height:1}
+.summary-total small{font-size:12px;color:var(--text2);font-family:var(--font-body);font-weight:400;display:block;margin-top:4px}
+.sum-line{display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid var(--border);font-size:12px}
+.sum-line:last-child{border-bottom:none}
+.sum-line .lbl{color:var(--text2)}
+.sum-line .val{font-weight:600;color:var(--text);font-family:var(--font-mono)}
+.deposit-box{background:var(--green-bg);border:1px solid rgba(26,122,74,0.2);border-radius:var(--radius-sm);padding:12px;margin-top:1rem}
+[data-theme="dark"] .deposit-box{border-color:rgba(62,207,142,0.2)}
+.deposit-box .d-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--green);margin-bottom:3px}
+.deposit-box .d-val{font-size:1.4rem;font-weight:700;color:var(--green);font-family:var(--font-mono)}
+.remaining-line{margin-top:10px;font-size:12px;color:var(--text2)}
+.remaining-line strong{color:var(--text);font-family:var(--font-mono)}
+hr{border:none;border-top:1px solid var(--border);margin:1rem 0}
+
+/* ADDON ROWS */
+.addon-row{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:var(--radius-sm);background:var(--bg2);border:1px solid var(--border);margin-bottom:5px;cursor:pointer;transition:all 0.15s}
+.addon-row.checked-row{border-color:var(--accent2);background:var(--amber-bg)}
+.addon-row input[type="checkbox"]{accent-color:var(--accent2);width:15px;height:15px;cursor:pointer;flex-shrink:0}
+.addon-lbl-wrap{flex:1}
+.addon-lbl-wrap strong{font-size:13px;font-weight:500;color:var(--text)}
+.addon-lbl-wrap p{font-size:11px;color:var(--text2);margin-top:1px}
+.addon-price{font-size:12px;font-weight:600;color:var(--amber);font-family:var(--font-mono)}
+.addon-custom-input{width:100px;background:var(--bg);border:1px solid var(--border2);border-radius:6px;padding:5px 8px;font-size:12px;color:var(--text);font-family:var(--font-mono);outline:none}
+
+/* PILLS */
+.pill{display:inline-flex;align-items:center;gap:4px;padding:2px 9px;border-radius:99px;font-size:11px;font-weight:500}
+.pill-gold{background:var(--amber-bg);color:var(--amber);border:1px solid rgba(201,168,76,0.25)}
+.pill-green{background:var(--green-bg);color:var(--green);border:1px solid rgba(26,122,74,0.25)}
+.pill-red{background:var(--red-bg);color:var(--red);border:1px solid rgba(192,57,43,0.25)}
+.pill-blue{background:var(--blue-bg);color:var(--blue);border:1px solid rgba(26,79,160,0.25)}
+[data-theme="dark"] .pill-blue{color:var(--blue)}
+
+/* NOTICE */
+.notice{display:flex;gap:11px;padding:12px 14px;border-radius:var(--radius-sm);margin-bottom:1rem;align-items:flex-start}
+.notice-amber{background:var(--amber-bg);border:1px solid rgba(201,168,76,0.2)}
+.notice-green{background:var(--green-bg);border:1px solid rgba(26,122,74,0.2)}
+.notice-blue{background:var(--blue-bg);border:1px solid rgba(26,79,160,0.2)}
+.notice p{font-size:12px;line-height:1.5}
+.notice-amber p{color:var(--amber)}
+.notice-green p{color:var(--green)}
+.notice-blue p{color:var(--blue)}
+
+/* RANGE SLIDER */
+input[type="range"]{-webkit-appearance:none;appearance:none;width:100%;height:3px;border-radius:99px;background:var(--bg3);cursor:pointer;outline:none}
+input[type="range"]::-webkit-slider-thumb{-webkit-appearance:none;width:16px;height:16px;border-radius:50%;background:var(--accent2);cursor:pointer;box-shadow:0 0 0 3px var(--amber-bg)}
+
+/* SECTION NAV BUTTONS */
+.nav-row{margin-top:1.25rem;display:flex;gap:10px;justify-content:space-between}
+
+/* EXAMPLE SITES */
+.site-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:10px;margin-bottom:1.5rem}
+.site-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:1rem;transition:all 0.2s;cursor:pointer;text-decoration:none;display:block}
+.site-card:hover{border-color:var(--accent2);transform:translateY(-2px);box-shadow:var(--shadow-lg)}
+.site-card-top{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+.site-favicon{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0}
+.site-card-name{font-size:13px;font-weight:600;color:var(--text)}
+.site-card-url{font-size:11px;color:var(--text3);font-family:var(--font-mono)}
+.site-card-desc{font-size:12px;color:var(--text2);line-height:1.4;margin-bottom:8px}
+.site-card-tags{display:flex;gap:5px;flex-wrap:wrap}
+.tag{display:inline-block;padding:2px 8px;border-radius:99px;font-size:10px;font-weight:500;background:var(--surface2);color:var(--text2);border:1px solid var(--border)}
+
+/* PRICING TIER CARDS */
+.tier-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px;margin-bottom:1.5rem}
+.tier-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:1rem;cursor:pointer;transition:all 0.2s;position:relative}
+.tier-card:hover{border-color:var(--accent2)}
+.tier-card.selected{border:2px solid var(--accent2);background:var(--amber-bg)}
+.tier-card.selected::before{content:'✓ Selected';position:absolute;top:8px;right:8px;font-size:10px;font-weight:600;color:var(--accent2);background:var(--surface);padding:2px 7px;border-radius:99px;border:1px solid var(--accent2)}
+.tier-name{font-size:13px;font-weight:600;color:var(--text);margin-bottom:4px}
+.tier-price{font-size:1.4rem;font-weight:700;font-family:var(--font-mono);color:var(--accent2);line-height:1.1;margin-bottom:4px}
+.tier-price small{font-size:11px;color:var(--text2);font-family:var(--font-body)}
+.tier-desc{font-size:11px;color:var(--text2);line-height:1.4}
+
+/* EXPORT */
+.export-area{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden}
+.export-toolbar{display:flex;gap:8px;padding:12px 14px;border-bottom:1px solid var(--border);flex-wrap:wrap;background:var(--surface)}
+.export-content{padding:1.5rem;font-family:var(--font-mono);font-size:12px;color:var(--text2);max-height:520px;overflow-y:auto;white-space:pre-wrap;line-height:1.9}
+
+/* PDF PRINT TEMPLATE (hidden) */
+#pdf-template{display:none}
+
+/* SCROLLBAR */
+::-webkit-scrollbar{width:5px;height:5px}
+::-webkit-scrollbar-track{background:var(--bg)}
+::-webkit-scrollbar-thumb{background:var(--bg3);border-radius:99px}
+
+/* RESPONSIVE */
+@media(max-width:600px){.header{flex-direction:column}.site-cards{grid-template-columns:1fr}.tier-grid{grid-template-columns:repeat(2,1fr)}}
+
+/* PRINT */
+@media print{
+  body{background:#fff!important;color:#000!important;font-size:11pt}
+  .steps-nav,.header-actions,.nav-row,.export-toolbar,.notice{display:none!important}
+  .export-content{background:#fff!important;color:#000!important;border:none!important;max-height:none!important;font-size:10pt}
+  .app{padding:0;max-width:100%}
+  body::before{display:none}
+}
+
+/* RUSH BADGE */
+.rush-badge{display:inline-block;background:var(--red-bg);color:var(--red);border:1px solid rgba(192,57,43,0.2);border-radius:99px;font-size:10px;font-weight:600;padding:1px 8px;letter-spacing:0.03em}
+
+/* DIVIDER */
+.divider{display:flex;align-items:center;gap:12px;margin:1.5rem 0;color:var(--text3);font-size:11px;letter-spacing:0.06em;text-transform:uppercase}
+.divider::before,.divider::after{content:'';flex:1;height:1px;background:var(--border)}
+
+/* CONTENT READY GRID */
+.content-checks{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:6px}
+.content-check{display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:var(--radius-sm);background:var(--bg2);border:1px solid var(--border);cursor:pointer;transition:all 0.15s}
+.content-check.checked{border-color:var(--green);background:var(--green-bg)}
+.content-check input{accent-color:var(--green);cursor:pointer}
+.content-check span{font-size:12px;color:var(--text2)}
+.content-check.checked span{color:var(--green)}
+
+/* SECTION HEADER WITH ICON */
+.sec-icon{width:40px;height:40px;border-radius:10px;background:var(--accent3);display:flex;align-items:center;justify-content:center;margin-bottom:10px}
+[data-theme="dark"] .sec-icon{background:rgba(201,168,76,0.15)}
+
+/* STRIPE */
+.stripe{height:4px;background:linear-gradient(90deg,var(--accent),var(--accent2),var(--accent));border-radius:99px;margin-bottom:2rem}
+
+/* REQUIRED STAR */
+.req{color:var(--red);margin-left:2px}
+
+/* BUSINESS TYPE SELECTOR */
+.biz-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(145px,1fr));gap:7px;margin-bottom:1rem}
+.biz-opt{padding:10px 12px;border:1px solid var(--border);border-radius:var(--radius-sm);cursor:pointer;transition:all 0.15s;text-align:center;background:var(--bg2)}
+.biz-opt:hover{border-color:var(--border2);background:var(--surface2)}
+.biz-opt.biz-selected{border:2px solid var(--accent2);background:var(--amber-bg)}
+.biz-opt-icon{font-size:20px;margin-bottom:4px}
+.biz-opt-name{font-size:12px;font-weight:500;color:var(--text)}
+.biz-opt-desc{font-size:10px;color:var(--text2);margin-top:2px}
+</style>
 </head>
-
 <body>
-    <div class="app">
+<div class="app">
 
-        <!-- HEADER -->
-        <div class="header">
-            <div class="header-left">
-                <h1>Client Discovery<br><span>& Pricing Toolkit</span></h1>
-                <p>Fill in the form → get instant quote → export proposal</p>
-            </div>
-            <div class="header-btns">
-                <button class="btn btn-ghost" onclick="resetAll()">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <polyline points="1 4 1 10 7 10" />
-                        <path d="M3.51 15a9 9 0 1 0 .49-3.51" />
-                    </svg>
-                    Reset
-                </button>
-                <button class="btn btn-accent" onclick="switchPanel('export')">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-                        <polyline points="7 10 12 15 17 10" />
-                        <line x1="12" y1="15" x2="12" y2="3" />
-                    </svg>
-                    Export Proposal
-                </button>
-            </div>
-        </div>
-
-        <!-- PROGRESS -->
-        <div class="progress-wrap">
-            <div class="progress-label"><span>Form completion</span><span id="pct-label">0%</span></div>
-            <div class="progress-bar">
-                <div class="progress-fill" id="prog-fill" style="width:0%"></div>
-            </div>
-        </div>
-
-        <!-- TABS -->
-        <div class="steps-nav">
-            <button class="step-tab active" id="tab-client" onclick="switchPanel('client')">
-                <span class="step-num">1</span> Client Info
-            </button>
-            <button class="step-tab" id="tab-project" onclick="switchPanel('project')">
-                <span class="step-num">2</span> Project Details
-            </button>
-            <button class="step-tab" id="tab-features" onclick="switchPanel('features')">
-                <span class="step-num">3</span> Features & Scope
-            </button>
-            <button class="step-tab" id="tab-pricing" onclick="switchPanel('pricing')">
-                <span class="step-num">4</span> Pricing & Addons
-            </button>
-            <button class="step-tab" id="tab-export" onclick="switchPanel('export')">
-                <span class="step-num">5</span> Export
-            </button>
-        </div>
-
-        <!-- ===================== PANEL 1: CLIENT INFO ===================== -->
-        <div class="panel active" id="panel-client">
-            <div class="sec-title">Client Information</div>
-            <div class="sec-sub">Basic contact and background details</div>
-            <div class="grid-2">
-                <div class="card">
-                    <div class="card-title">
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                            stroke-width="2">
-                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
-                            <circle cx="12" cy="7" r="4" />
-                        </svg>
-                        Personal Details
-                    </div>
-                    <div class="field"><label>Full Name *</label><input type="text" id="c-name"
-                            placeholder="e.g. Abebe Kebede" oninput="calcProgress()"></div>
-                    <div class="field"><label>Email Address</label><input type="email" id="c-email"
-                            placeholder="client@email.com" oninput="calcProgress()"></div>
-                    <div class="field"><label>Phone / Telegram</label><input type="tel" id="c-phone"
-                            placeholder="+251 9xx xxx xxxx" oninput="calcProgress()"></div>
-                    <div class="field"><label>Location / City</label><input type="text" id="c-city"
-                            placeholder="e.g. Dire Dawa, Addis Ababa" oninput="calcProgress()"></div>
-                </div>
-                <div class="card">
-                    <div class="card-title">
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                            stroke-width="2">
-                            <rect x="2" y="3" width="20" height="14" rx="2" />
-                            <line x1="8" y1="21" x2="16" y2="21" />
-                            <line x1="12" y1="17" x2="12" y2="21" />
-                        </svg>
-                        Professional Background
-                    </div>
-                    <div class="field"><label>Profession / Title</label><input type="text" id="c-profession"
-                            placeholder="e.g. Software Engineer, Doctor, Artist" oninput="calcProgress()"></div>
-                    <div class="field"><label>Organization / Company</label><input type="text" id="c-org"
-                            placeholder="e.g. Freelancer / Self-employed" oninput="calcProgress()"></div>
-                    <div class="field">
-                        <label>Client Type</label>
-                        <select id="c-type" onchange="calcProgress()">
-                            <option value="">Select type...</option>
-                            <option>Individual professional</option>
-                            <option>Small business</option>
-                            <option>NGO / Non-profit</option>
-                            <option>Startup</option>
-                            <option>Large organization</option>
-                        </select>
-                    </div>
-                    <div class="field"><label>How did they find you?</label>
-                        <select id="c-source" onchange="calcProgress()">
-                            <option value="">Select...</option>
-                            <option>Referral / Word of mouth</option>
-                            <option>Social media</option>
-                            <option>LinkedIn</option>
-                            <option>Sunday school / Church community</option>
-                            <option>University network</option>
-                            <option>Cold contact</option>
-                            <option>Other</option>
-                        </select>
-                    </div>
-                </div>
-            </div>
-            <div class="card" style="margin-top:1rem">
-                <div class="card-title">Meeting Notes</div>
-                <div class="field"><label>Notes from call / first meeting</label>
-                    <textarea id="c-notes" placeholder="Write anything useful from your initial conversation..."
-                        rows="4" oninput="calcProgress()"></textarea>
-                </div>
-            </div>
-            <div style="margin-top:1rem;text-align:right">
-                <button class="btn btn-accent" onclick="switchPanel('project')">Next: Project Details →</button>
-            </div>
-        </div>
-
-        <!-- ===================== PANEL 2: PROJECT DETAILS ===================== -->
-        <div class="panel" id="panel-project">
-            <div class="sec-title">Project Details</div>
-            <div class="sec-sub">Understand the goal and context of the website</div>
-            <div class="grid-2">
-                <div class="card">
-                    <div class="card-title">Project Overview</div>
-                    <div class="field"><label>Project Name / Working Title</label><input type="text" id="p-name"
-                            placeholder="e.g. Dr. Abebe's Medical Profile" oninput="calcProgress()"></div>
-                    <div class="field">
-                        <label>Website Type</label>
-                        <select id="p-type" onchange="calcProgress()">
-                            <option value="">Select...</option>
-                            <option>Personal profile / portfolio</option>
-                            <option>Business landing page</option>
-                            <option>Professional CV site</option>
-                            <option>Artist / creative portfolio</option>
-                            <option>Blog / content site</option>
-                            <option>Event page</option>
-                            <option>E-commerce (products)</option>
-                            <option>Other</option>
-                        </select>
-                    </div>
-                    <div class="field">
-                        <label>Primary Goal</label>
-                        <select id="p-goal" onchange="calcProgress()">
-                            <option value="">Select main goal...</option>
-                            <option>Get freelance clients</option>
-                            <option>Get job offers</option>
-                            <option>Showcase portfolio / work</option>
-                            <option>Build online presence</option>
-                            <option>Sell products / services</option>
-                            <option>Share knowledge / blog</option>
-                            <option>Event promotion</option>
-                        </select>
-                    </div>
-                    <div class="field">
-                        <label>Target Audience</label>
-                        <select id="p-audience" onchange="calcProgress()">
-                            <option value="">Select...</option>
-                            <option>Potential employers (HR / recruiters)</option>
-                            <option>Business clients (B2B)</option>
-                            <option>General public</option>
-                            <option>International audience</option>
-                            <option>Local Ethiopian audience</option>
-                            <option>Creative / artistic community</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="card">
-                    <div class="card-title">Timeline & Urgency</div>
-                    <div class="field">
-                        <label>Desired Delivery: <strong id="timeline-val" style="color:var(--accent2)">2
-                                weeks</strong></label>
-                        <input type="range" class="timeline-slider" id="p-timeline" min="1" max="8" value="2"
-                            oninput="updateTimeline(this.value); calcProgress()">
-                        <div
-                            style="display:flex;justify-content:space-between;font-size:11px;color:var(--text3);margin-top:4px">
-                            <span>3 days</span><span>2 weeks</span><span>1 month</span><span>2 months</span>
-                        </div>
-                    </div>
-                    <div class="field" style="margin-top:1.25rem">
-                        <label>Is this urgent?</label>
-                        <div class="addon-row" style="margin-top:6px">
-                            <input type="checkbox" id="p-rush" onchange="calcPricing(); calcProgress()">
-                            <label for="p-rush" class="addon-lbl" style="cursor:pointer">Rush delivery (+30%) <span
-                                    class="rush-badge">RUSH</span></label>
-                        </div>
-                    </div>
-                    <div class="field">
-                        <label>Design Style Preference</label>
-                        <select id="p-style" onchange="calcProgress()">
-                            <option value="">Select...</option>
-                            <option>Clean & minimal</option>
-                            <option>Bold & creative</option>
-                            <option>Corporate / professional</option>
-                            <option>Dark / futuristic</option>
-                            <option>Colorful / playful</option>
-                            <option>Elegant / luxury</option>
-                            <option>Client to decide</option>
-                        </select>
-                    </div>
-                    <div class="field">
-                        <label>Preferred Language(s) on site</label>
-                        <select id="p-lang" onchange="calcProgress()">
-                            <option value="">Select...</option>
-                            <option>English only</option>
-                            <option>Amharic only</option>
-                            <option>English + Amharic</option>
-                            <option>English + Afaan Oromo</option>
-                            <option>Multilingual (3+)</option>
-                        </select>
-                    </div>
-                </div>
-            </div>
-            <div class="card" style="margin-top:1rem">
-                <div class="card-title">Inspiration & References</div>
-                <div class="grid-2">
-                    <div class="field"><label>Website(s) they like (URLs or descriptions)</label>
-                        <textarea id="p-refs"
-                            placeholder="e.g. https://example.com — I like the dark theme and card layout..." rows="3"
-                            oninput="calcProgress()"></textarea>
-                    </div>
-                    <div class="field"><label>Content ready? (check all that apply)</label>
-                        <div style="display:flex;flex-direction:column;gap:6px;margin-top:6px">
-                            <div class="addon-row"><input type="checkbox" id="cnt-photo"
-                                    onchange="calcProgress()"><label for="cnt-photo" class="addon-lbl"
-                                    style="cursor:pointer">Profile photo / images</label></div>
-                            <div class="addon-row"><input type="checkbox" id="cnt-bio" onchange="calcProgress()"><label
-                                    for="cnt-bio" class="addon-lbl" style="cursor:pointer">Bio / About text</label>
-                            </div>
-                            <div class="addon-row"><input type="checkbox" id="cnt-portfolio"
-                                    onchange="calcProgress()"><label for="cnt-portfolio" class="addon-lbl"
-                                    style="cursor:pointer">Portfolio / work samples</label></div>
-                            <div class="addon-row"><input type="checkbox" id="cnt-cv" onchange="calcProgress()"><label
-                                    for="cnt-cv" class="addon-lbl" style="cursor:pointer">CV / resume</label></div>
-                            <div class="addon-row"><input type="checkbox" id="cnt-domain"
-                                    onchange="calcProgress()"><label for="cnt-domain" class="addon-lbl"
-                                    style="cursor:pointer">Domain name purchased</label></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div style="margin-top:1rem;display:flex;gap:10px;justify-content:space-between">
-                <button class="btn btn-ghost" onclick="switchPanel('client')">← Back</button>
-                <button class="btn btn-accent" onclick="switchPanel('features')">Next: Features →</button>
-            </div>
-        </div>
-
-        <!-- ===================== PANEL 3: FEATURES ===================== -->
-        <div class="panel" id="panel-features">
-            <div class="layout-with-sidebar">
-                <div>
-                    <div class="sec-title">Features & Scope</div>
-                    <div class="sec-sub">Check everything the client needs — price updates live</div>
-
-                    <div class="notice notice-amber">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                            stroke-width="2">
-                            <circle cx="12" cy="12" r="10" />
-                            <line x1="12" y1="8" x2="12" y2="12" />
-                            <line x1="12" y1="16" x2="12" y2="16.5" stroke-width="3" />
-                        </svg>
-                        <p>Each checked feature adds to the base price. Prices are in ETB. Adjust custom amounts where
-                            shown.</p>
-                    </div>
-
-                    <!-- Pages -->
-                    <div class="feature-group">
-                        <div class="feature-group-title">Pages & Structure</div>
-                        <div id="feat-pages"></div>
-                    </div>
-
-                    <!-- Design -->
-                    <div class="feature-group">
-                        <div class="feature-group-title">Design & UX</div>
-                        <div id="feat-design"></div>
-                    </div>
-
-                    <!-- Functionality -->
-                    <div class="feature-group">
-                        <div class="feature-group-title">Functionality</div>
-                        <div id="feat-func"></div>
-                    </div>
-
-                    <!-- Content -->
-                    <div class="feature-group">
-                        <div class="feature-group-title">Content & Media</div>
-                        <div id="feat-content"></div>
-                    </div>
-
-                    <!-- Technical -->
-                    <div class="feature-group">
-                        <div class="feature-group-title">Technical & SEO</div>
-                        <div id="feat-tech"></div>
-                    </div>
-                </div>
-
-                <!-- Sidebar: live summary -->
-                <div>
-                    <div class="summary-sticky">
-                        <div
-                            style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:var(--text2);margin-bottom:8px">
-                            Live Estimate</div>
-                        <div class="summary-total" id="sum-total">0 ETB<br><small>estimated total</small></div>
-                        <hr>
-                        <div id="sum-lines"></div>
-                        <div class="deposit-box">
-                            <div class="d-label">50% Upfront Deposit</div>
-                            <div class="d-val" id="sum-deposit">0 ETB</div>
-                        </div>
-                        <div style="margin-top:12px;font-size:12px;color:var(--text3)">
-                            Remaining on delivery: <strong id="sum-remaining" style="color:var(--text2)">0 ETB</strong>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div style="margin-top:1rem;display:flex;gap:10px;justify-content:space-between">
-                <button class="btn btn-ghost" onclick="switchPanel('project')">← Back</button>
-                <button class="btn btn-accent" onclick="switchPanel('pricing')">Next: Pricing →</button>
-            </div>
-        </div>
-
-        <!-- ===================== PANEL 4: PRICING ===================== -->
-        <div class="panel" id="panel-pricing">
-            <div class="layout-with-sidebar">
-                <div>
-                    <div class="sec-title">Pricing & Add-ons</div>
-                    <div class="sec-sub">Fine-tune costs, add maintenance, logo and other services</div>
-
-                    <div class="card" style="margin-bottom:1rem">
-                        <div class="card-title">Base Package Override</div>
-                        <div class="notice notice-amber" style="margin-bottom:1rem">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                stroke-width="2">
-                                <circle cx="12" cy="12" r="10" />
-                                <line x1="12" y1="8" x2="12" y2="12" />
-                                <line x1="12" y1="16" x2="12" y2="16.5" stroke-width="3" />
-                            </svg>
-                            <p>Features on the previous tab auto-calculate. Use the override only if you want to set a
-                                custom base price.</p>
-                        </div>
-                        <div class="field">
-                            <label>Manual base price override (ETB) — leave 0 to use auto-calculated</label>
-                            <input type="number" id="price-override" placeholder="0" value="0" min="0"
-                                oninput="calcPricing()">
-                        </div>
-                        <div class="field">
-                            <label>Discount / negotiated reduction (ETB)</label>
-                            <input type="number" id="price-discount" placeholder="0" value="0" min="0"
-                                oninput="calcPricing()">
-                        </div>
-                    </div>
-
-                    <div class="card" style="margin-bottom:1rem">
-                        <div class="card-title">Add-on Services</div>
-                        <div id="addon-list"></div>
-                    </div>
-
-                    <div class="card" style="margin-bottom:1rem">
-                        <div class="card-title">Revision & Support Policy</div>
-                        <div class="field">
-                            <label>Number of included revision rounds</label>
-                            <select id="revisions" onchange="calcPricing()">
-                                <option value="0">0 revisions (extra charge for any changes)</option>
-                                <option value="1" selected>1 revision round (included)</option>
-                                <option value="2">2 revision rounds (included)</option>
-                                <option value="3">3 revision rounds (included)</option>
-                                <option value="unlimited">Unlimited (Premium only)</option>
-                            </select>
-                        </div>
-                        <div class="field">
-                            <label>Post-launch support period</label>
-                            <select id="support" onchange="calcPricing()">
-                                <option value="none">No support included</option>
-                                <option value="7">7 days bug-fix support</option>
-                                <option value="14" selected>14 days bug-fix support</option>
-                                <option value="30">30 days support (+500 ETB)</option>
-                                <option value="60">60 days support (+1,200 ETB)</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <div class="card">
-                        <div class="card-title">Deposit & Payment Terms</div>
-                        <div class="field">
-                            <label>Upfront deposit percentage</label>
-                            <select id="deposit-pct" onchange="calcPricing()">
-                                <option value="30">30% upfront</option>
-                                <option value="50" selected>50% upfront (standard)</option>
-                                <option value="70">70% upfront</option>
-                                <option value="100">100% upfront (trusted client)</option>
-                            </select>
-                        </div>
-                        <div class="field">
-                            <label>Payment method</label>
-                            <select id="payment-method" onchange="calcProgress()">
-                                <option value="">Select...</option>
-                                <option>CBE Birr</option>
-                                <option>Telebirr</option>
-                                <option>Cash</option>
-                                <option>Bank transfer</option>
-                                <option>TigoPesa / M-Pesa</option>
-                            </select>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Sidebar -->
-                <div>
-                    <div class="summary-sticky">
-                        <div
-                            style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:var(--text2);margin-bottom:8px">
-                            Final Quote</div>
-                        <div class="summary-total" id="sum-total2">0 ETB<br><small>total project cost</small></div>
-                        <hr>
-                        <div id="sum-lines2"></div>
-                        <div class="deposit-box" style="margin-top:1rem">
-                            <div class="d-label">Upfront Deposit</div>
-                            <div class="d-val" id="sum-deposit2">0 ETB</div>
-                        </div>
-                        <div style="margin-top:10px;font-size:13px;color:var(--text2)">
-                            Remaining on delivery:<br>
-                            <strong id="sum-remaining2" style="color:var(--text);font-size:1.1rem">0 ETB</strong>
-                        </div>
-                        <hr>
-                        <button class="btn btn-green" style="width:100%;justify-content:center;margin-top:4px"
-                            onclick="switchPanel('export')">
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                stroke-width="2">
-                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-                                <polyline points="7 10 12 15 17 10" />
-                                <line x1="12" y1="15" x2="12" y2="3" />
-                            </svg>
-                            Export Full Proposal
-                        </button>
-                    </div>
-                </div>
-            </div>
-            <div style="margin-top:1rem;display:flex;gap:10px;justify-content:space-between">
-                <button class="btn btn-ghost" onclick="switchPanel('features')">← Back</button>
-                <button class="btn btn-accent" onclick="switchPanel('export')">Generate Export →</button>
-            </div>
-        </div>
-
-        <!-- ===================== PANEL 5: EXPORT ===================== -->
-        <div class="panel" id="panel-export">
-            <div class="sec-title">Export Client Proposal</div>
-            <div class="sec-sub">Download or copy a complete proposal document for your client</div>
-
-            <div class="notice notice-green" style="margin-bottom:1.5rem">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
-                    <polyline points="22 4 12 14.01 9 11.01" />
-                </svg>
-                <p>All data from the previous steps is compiled below. Review, then export as PDF, copy as text, or save
-                    as JSON.</p>
-            </div>
-
-            <div class="export-actions">
-                <button class="btn btn-accent" onclick="exportPDF()">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-                        <polyline points="14 2 14 8 20 8" />
-                    </svg>
-                    Print / Save as PDF
-                </button>
-                <button class="btn btn-ghost" onclick="copyText()">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <rect x="9" y="9" width="13" height="13" rx="2" />
-                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
-                    </svg>
-                    Copy as Text
-                </button>
-                <button class="btn btn-ghost" onclick="saveJSON()">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-                        <polyline points="7 10 12 15 17 10" />
-                        <line x1="12" y1="15" x2="12" y2="3" />
-                    </svg>
-                    Download JSON
-                </button>
-                <button class="btn btn-ghost" onclick="generatePreview()">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
-                        <circle cx="12" cy="12" r="3" />
-                    </svg>
-                    Refresh Preview
-                </button>
-            </div>
-
-            <div class="export-preview" id="export-preview">
-                Click "Refresh Preview" or navigate here from the Pricing tab to generate your proposal...
-            </div>
-
-            <div style="margin-top:1rem">
-                <button class="btn btn-ghost" onclick="switchPanel('pricing')">← Back to Pricing</button>
-            </div>
-        </div>
-
+<!-- HEADER -->
+<div class="header">
+  <div class="header-brand">
+    <div class="brand-logo"><span>YD</span></div>
+    <div class="brand-text">
+      <h1>Client Discovery & Pricing</h1>
+      <p>By Yabsira Dejene (Yabu) · Web Development</p>
     </div>
+  </div>
+  <div class="header-actions">
+    <button class="theme-toggle" onclick="toggleTheme()" title="Toggle dark/light mode">
+      <svg id="theme-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+    </button>
+    <button class="btn btn-ghost btn-sm" onclick="resetAll()">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.51"/></svg>
+      Reset
+    </button>
+    <button class="btn btn-gold btn-sm" onclick="switchPanel('export');generatePreview()">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+      Export Proposal
+    </button>
+  </div>
+</div>
 
-    <!-- PRINT STYLES -->
-    <style id="print-styles">
-        @media print {
-            body {
-                background: #fff !important;
-                color: #000 !important;
-            }
+<!-- PROGRESS -->
+<div class="progress-wrap">
+  <div class="progress-meta">
+    <span>Form completion</span>
+    <span class="progress-pct" id="pct-label">0%</span>
+  </div>
+  <div class="progress-bar"><div class="progress-fill" id="prog-fill" style="width:0%"></div></div>
+</div>
 
-            .steps-nav,
-            .header-btns,
-            .btn,
-            .export-actions,
-            .notice {
-                display: none !important;
-            }
+<!-- TABS -->
+<div class="steps-nav">
+  <button class="step-tab active" id="tab-client" onclick="switchPanel('client')"><span class="step-num">1</span>Client Info</button>
+  <button class="step-tab" id="tab-project" onclick="switchPanel('project')"><span class="step-num">2</span>Project</button>
+  <button class="step-tab" id="tab-biz" onclick="switchPanel('biz')"><span class="step-num">3</span>Biz Type & Scale</button>
+  <button class="step-tab" id="tab-features" onclick="switchPanel('features')"><span class="step-num">4</span>Features</button>
+  <button class="step-tab" id="tab-backend" onclick="switchPanel('backend')"><span class="step-num">5</span>Backend & CMS</button>
+  <button class="step-tab" id="tab-pricing" onclick="switchPanel('pricing')"><span class="step-num">6</span>Pricing</button>
+  <button class="step-tab" id="tab-export" onclick="switchPanel('export');generatePreview()"><span class="step-num">7</span>Export</button>
+</div>
 
-            .export-preview {
-                background: #fff !important;
-                color: #000 !important;
-                border: 1px solid #ccc !important;
-                max-height: none !important;
-                font-size: 12px !important;
-            }
+<!-- ==================== PANEL 1: CLIENT INFO ==================== -->
+<div class="panel active" id="panel-client">
+  <div class="sec-header">
+    <div class="sec-title">Client Information</div>
+    <div class="sec-sub">Basic contact and background details about your client</div>
+  </div>
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-header">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        Personal Details
+      </div>
+      <div class="field"><label>Full Name <span class="req">*</span></label><input type="text" id="c-name" placeholder="e.g. Abebe Kebede" oninput="calcProgress()"></div>
+      <div class="field"><label>Email Address</label><input type="email" id="c-email" placeholder="client@email.com" oninput="calcProgress()"></div>
+      <div class="field"><label>Phone / Telegram</label><input type="tel" id="c-phone" placeholder="+251 9xx xxx xxxx" oninput="calcProgress()"></div>
+      <div class="field"><label>Location / City</label><input type="text" id="c-city" placeholder="e.g. Dire Dawa, Addis Ababa" oninput="calcProgress()"></div>
+      <div class="field"><label>Preferred Contact Method</label>
+        <select id="c-contact" onchange="calcProgress()">
+          <option value="">Select...</option>
+          <option>Telegram</option><option>Phone call</option><option>Email</option><option>WhatsApp</option><option>In person</option>
+        </select>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-header">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+        Professional Background
+      </div>
+      <div class="field"><label>Profession / Title</label><input type="text" id="c-profession" placeholder="e.g. Software Engineer, Doctor, Artist" oninput="calcProgress()"></div>
+      <div class="field"><label>Organization / Company</label><input type="text" id="c-org" placeholder="e.g. ABC Trading, Self-employed" oninput="calcProgress()"></div>
+      <div class="field"><label>Client Type</label>
+        <select id="c-type" onchange="calcProgress()">
+          <option value="">Select type...</option>
+          <option>Individual / Freelancer</option>
+          <option>Small business owner</option>
+          <option>Medium business</option>
+          <option>Large enterprise</option>
+          <option>NGO / Non-profit</option>
+          <option>Government institution</option>
+          <option>Startup (early stage)</option>
+          <option>Church / Religious org</option>
+          <option>Educational institution</option>
+          <option>Healthcare provider</option>
+          <option>Media / Content creator</option>
+        </select>
+      </div>
+      <div class="field"><label>Budget Expectation</label>
+        <select id="c-budget" onchange="calcProgress()">
+          <option value="">Client's rough budget...</option>
+          <option value="low">Low — Under 10,000 ETB</option>
+          <option value="med">Medium — 10,000–30,000 ETB</option>
+          <option value="high">Standard — 30,000–60,000 ETB</option>
+          <option value="premium">Premium — 60,000+ ETB</option>
+          <option value="unknown">Not disclosed yet</option>
+        </select>
+      </div>
+      <div class="field"><label>How did they find you?</label>
+        <select id="c-source" onchange="calcProgress()">
+          <option value="">Select...</option>
+          <option>Referral / Word of mouth</option>
+          <option>Social media (Instagram/TikTok)</option>
+          <option>LinkedIn</option>
+          <option>Church / Sunday school community</option>
+          <option>University network</option>
+          <option>Telegram channel</option>
+          <option>Cold outreach by client</option>
+          <option>Repeat client</option>
+          <option>Other</option>
+        </select>
+      </div>
+    </div>
+  </div>
+  <div class="card" style="margin-top:1rem">
+    <div class="card-header">Meeting Notes</div>
+    <div class="grid-2">
+      <div class="field"><label>Notes from call / first meeting</label>
+        <textarea id="c-notes" placeholder="Any useful details from your initial conversation, their pain points, goals, concerns..." rows="4" oninput="calcProgress()"></textarea>
+      </div>
+      <div class="field"><label>Urgency / Priority Level</label>
+        <select id="c-urgency" onchange="calcProgress()">
+          <option value="">Select...</option>
+          <option>Not urgent — exploring options</option>
+          <option>Moderate — within 1–2 months</option>
+          <option>Urgent — within 2–3 weeks</option>
+          <option>Very urgent — ASAP (rush applies)</option>
+        </select>
+        <div class="field" style="margin-top:0.75rem"><label>Decision Maker?</label>
+          <select id="c-decision" onchange="calcProgress()">
+            <option value="">Select...</option>
+            <option>Yes — client decides alone</option>
+            <option>Needs approval from partner/boss</option>
+            <option>Committee / Board must approve</option>
+          </select>
+        </div>
+        <div style="margin-top:0.75rem"><label class="field" style="display:block;font-size:12px;font-weight:500;color:var(--text2);margin-bottom:5px">Confidence of closing deal</label>
+          <select id="c-confidence" onchange="calcProgress()">
+            <option value="">Select...</option>
+            <option>High — very likely to proceed</option>
+            <option>Medium — still considering</option>
+            <option>Low — just researching prices</option>
+          </select>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="nav-row">
+    <div></div>
+    <button class="btn btn-dark" onclick="switchPanel('project')">Next: Project Details →</button>
+  </div>
+</div>
 
-            .panel {
-                display: block !important;
-            }
+<!-- ==================== PANEL 2: PROJECT ==================== -->
+<div class="panel" id="panel-project">
+  <div class="sec-header">
+    <div class="sec-title">Project Details</div>
+    <div class="sec-sub">Understand the goal, context, and timeline for this website</div>
+  </div>
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-header">Project Overview</div>
+      <div class="field"><label>Project Name / Working Title</label><input type="text" id="p-name" placeholder="e.g. Dr. Abebe Medical Profile Site" oninput="calcProgress()"></div>
+      <div class="field"><label>Website Type <span class="req">*</span></label>
+        <select id="p-type" onchange="calcProgress()">
+          <option value="">Select...</option>
+          <option>Personal profile / portfolio</option>
+          <option>Business landing page</option>
+          <option>Professional CV site</option>
+          <option>Artist / creative portfolio</option>
+          <option>Blog / content site</option>
+          <option>Corporate / organizational site</option>
+          <option>E-commerce (products)</option>
+          <option>NGO / non-profit site</option>
+          <option>Event / conference page</option>
+          <option>Real estate / property listing</option>
+          <option>Restaurant / food business</option>
+          <option>Healthcare / clinic site</option>
+          <option>School / educational site</option>
+          <option>News / media site</option>
+          <option>Government / public institution</option>
+          <option>Booking / appointment site</option>
+          <option>Directory / listing site</option>
+        </select>
+      </div>
+      <div class="field"><label>Primary Goal <span class="req">*</span></label>
+        <select id="p-goal" onchange="calcProgress()">
+          <option value="">Select main goal...</option>
+          <option>Get freelance clients / leads</option>
+          <option>Get job offers</option>
+          <option>Showcase portfolio / work</option>
+          <option>Build online credibility</option>
+          <option>Sell products / services online</option>
+          <option>Accept online bookings / appointments</option>
+          <option>Share knowledge / blog</option>
+          <option>Promote an event</option>
+          <option>Raise donations / funds</option>
+          <option>Provide information to the public</option>
+          <option>Internal staff portal</option>
+        </select>
+      </div>
+      <div class="field"><label>Target Audience</label>
+        <select id="p-audience" onchange="calcProgress()">
+          <option value="">Select...</option>
+          <option>Potential employers / HR</option>
+          <option>Business clients (B2B)</option>
+          <option>General Ethiopian public</option>
+          <option>International audience</option>
+          <option>Local city audience</option>
+          <option>Creative / artistic community</option>
+          <option>Medical / health patients</option>
+          <option>Students / youth</option>
+          <option>Government officials</option>
+          <option>Donors / NGO supporters</option>
+          <option>Retail customers (B2C)</option>
+        </select>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-header">Timeline & Style</div>
+      <div class="field">
+        <label>Desired Delivery: <strong id="timeline-val" style="color:var(--accent2)">2 weeks</strong></label>
+        <input type="range" min="1" max="8" value="2" id="p-timeline" oninput="updateTimeline(this.value);calcProgress()">
+        <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--text3);margin-top:4px">
+          <span>3 days</span><span>2 wks</span><span>1 mo</span><span>2 mo</span>
+        </div>
+      </div>
+      <div class="addon-row" style="margin-top:0.75rem;margin-bottom:0.75rem" id="rush-row">
+        <input type="checkbox" id="p-rush" onchange="calcPricing();calcProgress()">
+        <div class="addon-lbl-wrap"><strong>Rush delivery (+30%)</strong> <span class="rush-badge">RUSH</span></div>
+      </div>
+      <div class="field"><label>Design Style Preference</label>
+        <select id="p-style" onchange="calcProgress()">
+          <option value="">Select...</option>
+          <option>Clean & minimal</option>
+          <option>Bold & creative</option>
+          <option>Corporate / professional</option>
+          <option>Dark / futuristic</option>
+          <option>Colorful / playful</option>
+          <option>Elegant / luxury</option>
+          <option>Earthy / African-inspired</option>
+          <option>Religious / traditional</option>
+          <option>Modern medical / clinical</option>
+          <option>Client to decide</option>
+        </select>
+      </div>
+      <div class="field"><label>Preferred Language(s)</label>
+        <select id="p-lang" onchange="calcProgress()">
+          <option value="">Select...</option>
+          <option>English only</option>
+          <option>Amharic only</option>
+          <option>English + Amharic</option>
+          <option>English + Afaan Oromo</option>
+          <option>English + Tigrinya</option>
+          <option>Multilingual (3+)</option>
+        </select>
+      </div>
+      <div class="field"><label>Number of Pages / Sections (estimated)</label>
+        <select id="p-pages" onchange="calcProgress()">
+          <option value="">Select...</option>
+          <option value="1-3">1–3 pages (simple)</option>
+          <option value="4-6">4–6 pages (standard)</option>
+          <option value="7-10">7–10 pages (medium)</option>
+          <option value="11-20">11–20 pages (large)</option>
+          <option value="20+">20+ pages (complex / enterprise)</option>
+        </select>
+      </div>
+    </div>
+  </div>
+  <div class="card" style="margin-top:1rem">
+    <div class="card-header">References & Content</div>
+    <div class="grid-2">
+      <div class="field"><label>Websites they like (URLs or descriptions)</label>
+        <textarea id="p-refs" placeholder="e.g. apple.com — I like the clean layout. Or 'a dark theme with smooth animations'" rows="3" oninput="calcProgress()"></textarea>
+      </div>
+      <div>
+        <label style="display:block;font-size:12px;font-weight:500;color:var(--text2);margin-bottom:8px">Content ready? (check all that apply)</label>
+        <div class="content-checks" id="content-checks">
+          <div class="content-check" onclick="toggleContentCheck(this,'cnt-photo')"><input type="checkbox" id="cnt-photo" onchange="calcProgress()"><span>Profile photo / images</span></div>
+          <div class="content-check" onclick="toggleContentCheck(this,'cnt-bio')"><input type="checkbox" id="cnt-bio" onchange="calcProgress()"><span>Bio / About text</span></div>
+          <div class="content-check" onclick="toggleContentCheck(this,'cnt-portfolio')"><input type="checkbox" id="cnt-portfolio" onchange="calcProgress()"><span>Portfolio / work samples</span></div>
+          <div class="content-check" onclick="toggleContentCheck(this,'cnt-cv')"><input type="checkbox" id="cnt-cv" onchange="calcProgress()"><span>CV / resume</span></div>
+          <div class="content-check" onclick="toggleContentCheck(this,'cnt-domain')"><input type="checkbox" id="cnt-domain" onchange="calcProgress()"><span>Domain name purchased</span></div>
+          <div class="content-check" onclick="toggleContentCheck(this,'cnt-logo')"><input type="checkbox" id="cnt-logo" onchange="calcProgress()"><span>Logo / brand assets</span></div>
+          <div class="content-check" onclick="toggleContentCheck(this,'cnt-products')"><input type="checkbox" id="cnt-products" onchange="calcProgress()"><span>Product info / pricing</span></div>
+          <div class="content-check" onclick="toggleContentCheck(this,'cnt-hosting')"><input type="checkbox" id="cnt-hosting" onchange="calcProgress()"><span>Hosting account</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="nav-row">
+    <button class="btn btn-ghost" onclick="switchPanel('client')">← Back</button>
+    <button class="btn btn-dark" onclick="switchPanel('biz')">Next: Business Type →</button>
+  </div>
+</div>
 
-            .app {
-                max-width: 100% !important;
-                padding: 0 !important;
-            }
-        }
-    </style>
+<!-- ==================== PANEL 3: BIZ TYPE ==================== -->
+<div class="panel" id="panel-biz">
+  <div class="sec-header">
+    <div class="sec-title">Business Type & Scale</div>
+    <div class="sec-sub">This affects which features are required and overall pricing range</div>
+  </div>
+  <div class="notice notice-blue">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12" y2="16.5" stroke-width="3"/></svg>
+    <p>Select the type that best describes the client's business. This helps auto-suggest the right features and tier.</p>
+  </div>
+  <div class="biz-grid" id="biz-type-grid"></div>
 
-    <script>
-        // ============================================================
-        // DATA DEFINITIONS
-        // ============================================================
+  <div class="divider">Scale & Complexity</div>
 
-        const FEATURES = {
-            pages: [
-                { id: 'f-home', name: 'Home / Hero section', desc: 'Main landing area with name, tagline, call-to-action', price: 4000 },
-                { id: 'f-about', name: 'About / Bio page', desc: 'Personal story, background, skills summary', price: 2000 },
-                { id: 'f-portfolio', name: 'Portfolio / Work gallery', desc: 'Showcase of projects, images or case studies', price: 3000 },
-                { id: 'f-cv', name: 'Resume / CV page', desc: 'Work experience, education, skills timeline', price: 1000 },
-                { id: 'f-services', name: 'Services page', desc: 'List of offered services with descriptions and rates', price: 2000 },
-                { id: 'f-blog', name: 'Blog / Articles section', desc: 'Requires CMS integration for editable posts', price: 3500 },
-                { id: 'f-contact', name: 'Contact page', desc: 'Dedicated page with contact form + map', price: 1000 },
-                { id: 'f-testimonials', name: 'Testimonials section', desc: 'Client reviews and success stories', price: 1000 },
-            ],
-            design: [
-                { id: 'f-responsive', name: 'Fully mobile responsive', desc: 'Looks perfect on all screen sizes', price: 800 },
-                { id: 'f-darkmode', name: 'Dark/light mode toggle', desc: 'User can switch between themes', price: 1200 },
-                { id: 'f-animations', name: 'Scroll animations & transitions', desc: 'Elements animate as user scrolls', price: 1500 },
-                { id: 'f-custom-design', name: 'Custom branded design', desc: 'Unique layout matching client brand identity', price: 2000 },
-                { id: 'f-loading', name: 'Loading screen / preloader', desc: 'Branded intro animation on page load', price: 600 },
-            ],
-            func: [
-                { id: 'f-form', name: 'Contact form with email delivery', desc: 'Working form that sends emails (EmailJS or backend)', price: 1000 },
-                { id: 'f-cms', name: 'CMS / self-editable content', desc: 'Sanity, Contentful, or WordPress integration', price: 4000 },
-                { id: 'f-multilang', name: 'Multi-language support', desc: 'i18n with language switcher', price: 2500 },
-                { id: 'f-social', name: 'Social media feed integration', desc: 'Instagram, Telegram channel, or YouTube feed', price: 1500 },
-                { id: 'f-analytics', name: 'Google Analytics integration', desc: 'Track visitor behavior and traffic', price: 400 },
-                { id: 'f-chat', name: 'Live chat widget', desc: 'Telegram bot or Tawk.to chat integration', price: 600 },
-            ],
-            content: [
-                { id: 'f-copywriting', name: 'Copywriting / content writing', desc: 'Professional text written for the client', price: 1500 },
-                { id: 'f-photo-edit', name: 'Photo editing & optimization', desc: 'Resize, compress, retouch profile images', price: 500 },
-                { id: 'f-icons', name: 'Custom icon set design', desc: 'Unique icons matching the brand', price: 800 },
-                { id: 'f-video', name: 'Video background / intro clip', desc: 'Video editing and web-optimized export', price: 1200 },
-            ],
-            tech: [
-                { id: 'f-seo', name: 'Basic SEO setup', desc: 'Meta tags, Open Graph, sitemap, robots.txt', price: 500 },
-                { id: 'f-advseo', name: 'Advanced SEO + schema markup', desc: 'Structured data, keyword optimization', price: 1800 },
-                { id: 'f-hosting-setup', name: 'Domain + hosting setup', desc: 'Deploy to Netlify / Vercel + domain connection', price: 700 },
-                { id: 'f-ssl', name: 'SSL certificate & HTTPS', desc: 'Secure connection setup', price: 300 },
-                { id: 'f-speed', name: 'Performance optimization', desc: 'Lazy loading, caching, Core Web Vitals tuning', price: 1000 },
-                { id: 'f-backup', name: 'Automated backups', desc: 'Weekly automatic site backups', price: 400 },
-            ]
-        };
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-header">Organization Size</div>
+      <div class="field"><label>Team / Staff Size</label>
+        <select id="biz-size" onchange="calcProgress()">
+          <option value="">Select...</option>
+          <option value="solo">Solo / 1 person</option>
+          <option value="micro">Micro — 2–5 people</option>
+          <option value="small">Small — 6–20 people</option>
+          <option value="medium">Medium — 21–100 people</option>
+          <option value="large">Large — 100+ people</option>
+        </select>
+      </div>
+      <div class="field"><label>Annual Revenue / Budget Range</label>
+        <select id="biz-revenue" onchange="calcProgress()">
+          <option value="">Select...</option>
+          <option>Pre-revenue / startup</option>
+          <option>Under 500,000 ETB/year</option>
+          <option>500K – 2M ETB/year</option>
+          <option>2M – 10M ETB/year</option>
+          <option>10M+ ETB/year</option>
+          <option>NGO / grant-funded</option>
+          <option>Government / public funded</option>
+        </select>
+      </div>
+      <div class="field"><label>Industry / Sector</label>
+        <select id="biz-sector" onchange="calcProgress()">
+          <option value="">Select...</option>
+          <option>Technology / IT</option>
+          <option>Healthcare / Medical</option>
+          <option>Education / Training</option>
+          <option>Finance / Banking</option>
+          <option>Retail / E-commerce</option>
+          <option>Agriculture / Farming</option>
+          <option>Construction / Real estate</option>
+          <option>Tourism / Hospitality</option>
+          <option>NGO / Development</option>
+          <option>Government / Public sector</option>
+          <option>Media / Entertainment</option>
+          <option>Legal / Professional services</option>
+          <option>Arts / Creative industry</option>
+          <option>Food & Beverage</option>
+          <option>Religious organization</option>
+          <option>Other</option>
+        </select>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-header">Technical Maturity</div>
+      <div class="field"><label>Does the client have an existing website?</label>
+        <select id="biz-existing" onchange="calcProgress()">
+          <option value="">Select...</option>
+          <option>No — brand new site</option>
+          <option>Yes — full redesign needed</option>
+          <option>Yes — just updates/refresh</option>
+          <option>Yes — migrating platform</option>
+        </select>
+      </div>
+      <div class="field"><label>Technical knowledge of client</label>
+        <select id="biz-tech" onchange="calcProgress()">
+          <option value="">Select...</option>
+          <option>Non-technical — needs guidance on everything</option>
+          <option>Basic — can update content with training</option>
+          <option>Moderate — knows CMS basics</option>
+          <option>Technical — has in-house IT</option>
+        </select>
+      </div>
+      <div class="field"><label>Who will manage the site after launch?</label>
+        <select id="biz-manage" onchange="calcProgress()">
+          <option value="">Select...</option>
+          <option>Freelancer (you) — ongoing retainer</option>
+          <option>Client themselves</option>
+          <option>Client's internal IT team</option>
+          <option>Third-party agency</option>
+          <option>Not decided yet</option>
+        </select>
+      </div>
+      <div class="field"><label>Compliance / Legal Requirements</label>
+        <select id="biz-compliance" onchange="calcProgress()">
+          <option value="">Select...</option>
+          <option>None — general site</option>
+          <option>Privacy policy page needed</option>
+          <option>GDPR compliance (international users)</option>
+          <option>Government accessibility standards</option>
+          <option>Financial / payment regulations</option>
+          <option>Healthcare data privacy</option>
+        </select>
+      </div>
+    </div>
+  </div>
 
-        const ADDONS = [
-            { id: 'a-logo', name: 'Logo design package', desc: 'Full logo + variations + brand colors', price: 3500 },
-            { id: 'a-flyer', name: 'Social media flyer pack (5 designs)', desc: 'Branded templates for Instagram/Telegram', price: 2000 },
-            { id: 'a-business-card', name: 'Business card design', desc: 'Print-ready double-sided card', price: 800 },
-            { id: 'a-maintenance', name: 'Monthly maintenance retainer', desc: 'Updates, backups, monitoring (per month)', price: 1000, isMonthly: true },
-            { id: 'a-training', name: 'Client training session (1hr)', desc: 'Teach client how to manage their site', price: 500 },
-            { id: 'a-custom', name: 'Custom add-on (specify)', desc: 'Enter a custom service and its price', price: 0, isCustom: true },
-        ];
+  <div class="divider">Recommended Tier</div>
+  <div class="tier-grid" id="tier-grid"></div>
 
-        const TIMELINE_LABELS = ['3 days', '5 days', '1 week', '2 weeks', '3 weeks', '1 month', '6 weeks', '2 months'];
+  <div class="nav-row">
+    <button class="btn btn-ghost" onclick="switchPanel('project')">← Back</button>
+    <button class="btn btn-dark" onclick="switchPanel('features')">Next: Features →</button>
+  </div>
+</div>
 
-        // ============================================================
-        // STATE
-        // ============================================================
-        let state = { activePanel: 'client' };
+<!-- ==================== PANEL 4: FEATURES ==================== -->
+<div class="panel" id="panel-features">
+  <div class="layout-sidebar">
+    <div>
+      <div class="sec-header">
+        <div class="sec-title">Features & Scope</div>
+        <div class="sec-sub">Select all front-end features needed — price updates live</div>
+      </div>
+      <div class="notice notice-amber">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12" y2="16.5" stroke-width="3"/></svg>
+        <p>All prices in ETB, current 2024–2025 Ethiopian market rates. Click any item to toggle.</p>
+      </div>
+      <div class="feature-group"><div class="feature-group-title">Pages & Structure</div><div id="feat-pages"></div></div>
+      <div class="feature-group"><div class="feature-group-title">Design & UX</div><div id="feat-design"></div></div>
+      <div class="feature-group"><div class="feature-group-title">Functionality</div><div id="feat-func"></div></div>
+      <div class="feature-group"><div class="feature-group-title">Content & Media</div><div id="feat-content"></div></div>
+      <div class="feature-group"><div class="feature-group-title">Technical & SEO</div><div id="feat-tech"></div></div>
+    </div>
+    <div>
+      <div class="summary-sticky" id="sidebar-feat">
+        <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--text2);margin-bottom:10px">Live Estimate</div>
+        <div class="summary-total" id="sum-total">0 ETB<small>estimated total</small></div>
+        <hr>
+        <div id="sum-lines"></div>
+        <div class="deposit-box"><div class="d-label">50% Upfront Deposit</div><div class="d-val" id="sum-deposit">0 ETB</div></div>
+        <div class="remaining-line">On delivery: <strong id="sum-remaining">0 ETB</strong></div>
+      </div>
+    </div>
+  </div>
+  <div class="nav-row">
+    <button class="btn btn-ghost" onclick="switchPanel('biz')">← Back</button>
+    <button class="btn btn-dark" onclick="switchPanel('backend')">Next: Backend & CMS →</button>
+  </div>
+</div>
 
-        // ============================================================
-        // INIT
-        // ============================================================
-        function init() {
-            renderFeatures();
-            renderAddons();
-            calcPricing();
-            calcProgress();
-        }
+<!-- ==================== PANEL 5: BACKEND & CMS ==================== -->
+<div class="panel" id="panel-backend">
+  <div class="layout-sidebar">
+    <div>
+      <div class="sec-header">
+        <div class="sec-title">Backend & Editable Content</div>
+        <div class="sec-sub">Does the client need a database, user accounts, editable content, or custom admin?</div>
+      </div>
+      <div class="notice notice-blue">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12" y2="16.5" stroke-width="3"/></svg>
+        <p>Backend work significantly increases scope. Only select what the client actually needs. These are in addition to front-end features.</p>
+      </div>
 
-        // ============================================================
-        // RENDER FEATURES
-        // ============================================================
-        function renderFeatureGroup(containerId, items) {
-            const el = document.getElementById(containerId);
-            el.innerHTML = items.map(f => `
+      <div class="feature-group"><div class="feature-group-title">CMS & Editable Content</div><div id="feat-cms"></div></div>
+      <div class="feature-group"><div class="feature-group-title">Database & Data Management</div><div id="feat-db"></div></div>
+      <div class="feature-group"><div class="feature-group-title">User Accounts & Auth</div><div id="feat-auth"></div></div>
+      <div class="feature-group"><div class="feature-group-title">E-commerce & Payments</div><div id="feat-ecom"></div></div>
+      <div class="feature-group"><div class="feature-group-title">API & Integrations</div><div id="feat-api"></div></div>
+      <div class="feature-group"><div class="feature-group-title">Security & Hosting Infrastructure</div><div id="feat-infra"></div></div>
+
+      <div class="card" style="margin-top:1rem">
+        <div class="card-header">Backend Technology Stack Preference</div>
+        <div class="grid-2">
+          <div class="field"><label>Preferred Frontend Framework</label>
+            <select id="bk-frontend" onchange="calcProgress()">
+              <option value="">No preference / your choice</option>
+              <option>HTML / CSS / Vanilla JS</option>
+              <option>React.js</option>
+              <option>Next.js</option>
+              <option>Vue.js</option>
+              <option>Nuxt.js</option>
+              <option>WordPress (theme)</option>
+              <option>Webflow</option>
+            </select>
+          </div>
+          <div class="field"><label>Preferred Backend / Server</label>
+            <select id="bk-backend" onchange="calcProgress()">
+              <option value="">No preference / your choice</option>
+              <option>Node.js + Express</option>
+              <option>Python + Django/Flask</option>
+              <option>PHP + Laravel</option>
+              <option>Firebase (serverless)</option>
+              <option>Supabase (serverless)</option>
+              <option>WordPress CMS</option>
+              <option>Strapi (headless CMS)</option>
+            </select>
+          </div>
+          <div class="field"><label>Database</label>
+            <select id="bk-db" onchange="calcProgress()">
+              <option value="">No preference / your choice</option>
+              <option>PostgreSQL</option>
+              <option>MySQL</option>
+              <option>MongoDB</option>
+              <option>Firebase Firestore</option>
+              <option>Supabase (Postgres)</option>
+              <option>SQLite (simple sites)</option>
+            </select>
+          </div>
+          <div class="field"><label>Hosting Preference</label>
+            <select id="bk-hosting" onchange="calcProgress()">
+              <option value="">No preference</option>
+              <option>Vercel (free tier)</option>
+              <option>Netlify (free tier)</option>
+              <option>DigitalOcean VPS</option>
+              <option>AWS / Google Cloud</option>
+              <option>cPanel shared hosting</option>
+              <option>Ethiopian local server</option>
+              <option>Client already has hosting</option>
+            </select>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div>
+      <div class="summary-sticky">
+        <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--text2);margin-bottom:10px">Live Estimate</div>
+        <div class="summary-total" id="sum-total-bk">0 ETB<small>estimated total</small></div>
+        <hr>
+        <div id="sum-lines-bk"></div>
+        <div class="deposit-box"><div class="d-label">50% Upfront Deposit</div><div class="d-val" id="sum-deposit-bk">0 ETB</div></div>
+        <div class="remaining-line">On delivery: <strong id="sum-remaining-bk">0 ETB</strong></div>
+      </div>
+    </div>
+  </div>
+  <div class="nav-row">
+    <button class="btn btn-ghost" onclick="switchPanel('features')">← Back</button>
+    <button class="btn btn-dark" onclick="switchPanel('pricing')">Next: Pricing →</button>
+  </div>
+</div>
+
+<!-- ==================== PANEL 6: PRICING ==================== -->
+<div class="panel" id="panel-pricing">
+  <div class="layout-sidebar">
+    <div>
+      <div class="sec-header">
+        <div class="sec-title">Pricing & Add-ons</div>
+        <div class="sec-sub">Fine-tune the quote, add extra services, and set payment terms</div>
+      </div>
+      <div class="card" style="margin-bottom:1rem">
+        <div class="card-header">Manual Override (Optional)</div>
+        <div class="notice notice-amber" style="margin-bottom:1rem">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12" y2="16.5" stroke-width="3"/></svg>
+          <p>Features auto-calculate. Override only if you want to set a custom negotiated base price.</p>
+        </div>
+        <div class="grid-2">
+          <div class="field"><label>Manual base price override (ETB) — 0 = use auto</label><input type="number" id="price-override" placeholder="0" value="0" min="0" oninput="calcPricing()"></div>
+          <div class="field"><label>Discount / negotiated reduction (ETB)</label><input type="number" id="price-discount" placeholder="0" value="0" min="0" oninput="calcPricing()"></div>
+        </div>
+      </div>
+      <div class="card" style="margin-bottom:1rem">
+        <div class="card-header">Add-on Services</div>
+        <div id="addon-list"></div>
+      </div>
+      <div class="card" style="margin-bottom:1rem">
+        <div class="card-header">Revision & Support Policy</div>
+        <div class="grid-2">
+          <div class="field"><label>Included revision rounds</label>
+            <select id="revisions" onchange="calcPricing()">
+              <option value="0">0 revisions (extra charge for changes)</option>
+              <option value="1" selected>1 revision round (standard)</option>
+              <option value="2">2 revision rounds</option>
+              <option value="3">3 revision rounds</option>
+              <option value="unlimited">Unlimited (premium only)</option>
+            </select>
+          </div>
+          <div class="field"><label>Post-launch support period</label>
+            <select id="support" onchange="calcPricing()">
+              <option value="none">No support included</option>
+              <option value="7">7 days bug-fix support</option>
+              <option value="14" selected>14 days bug-fix support</option>
+              <option value="30">30 days support (+1,500 ETB)</option>
+              <option value="60">60 days support (+3,500 ETB)</option>
+              <option value="90">90 days support (+6,000 ETB)</option>
+            </select>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header">Payment Terms</div>
+        <div class="grid-2">
+          <div class="field"><label>Upfront deposit %</label>
+            <select id="deposit-pct" onchange="calcPricing()">
+              <option value="30">30% upfront</option>
+              <option value="50" selected>50% upfront (standard)</option>
+              <option value="70">70% upfront</option>
+              <option value="100">100% upfront (trusted client)</option>
+            </select>
+          </div>
+          <div class="field"><label>Payment method</label>
+            <select id="payment-method" onchange="calcProgress()">
+              <option value="">Select...</option>
+              <option>CBE Birr</option>
+              <option>Telebirr</option>
+              <option>Cash</option>
+              <option>Bank transfer (CBE)</option>
+              <option>Awash Bank</option>
+              <option>Abyssinia Bank</option>
+              <option>Payoneer (international)</option>
+              <option>Western Union</option>
+            </select>
+          </div>
+          <div class="field"><label>Milestones / Payment schedule</label>
+            <select id="payment-schedule" onchange="calcProgress()">
+              <option value="">Select...</option>
+              <option>2 payments: 50% now + 50% on delivery</option>
+              <option>3 payments: 30% + 40% midway + 30% delivery</option>
+              <option>2 payments: 70% now + 30% on delivery</option>
+              <option>Full payment upfront</option>
+              <option>Monthly retainer</option>
+            </select>
+          </div>
+          <div class="field"><label>Invoice currency</label>
+            <select id="invoice-currency" onchange="calcProgress()">
+              <option value="ETB">ETB (Ethiopian Birr)</option>
+              <option value="USD">USD (Dollar equivalent)</option>
+            </select>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div>
+      <div class="summary-sticky">
+        <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--text2);margin-bottom:10px">Final Quote</div>
+        <div class="summary-total" id="sum-total2">0 ETB<small>total project cost</small></div>
+        <hr>
+        <div id="sum-lines2"></div>
+        <div class="deposit-box" style="margin-top:1rem"><div class="d-label">Upfront Deposit</div><div class="d-val" id="sum-deposit2">0 ETB</div></div>
+        <div class="remaining-line">On delivery:<br><strong id="sum-remaining2" style="font-size:1.1rem">0 ETB</strong></div>
+        <hr>
+        <button class="btn btn-green" style="width:100%;justify-content:center" onclick="switchPanel('export');generatePreview()">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+          Export Full Proposal
+        </button>
+      </div>
+    </div>
+  </div>
+   <div class="nav-row">
+    <button class="btn btn-ghost" onclick="switchPanel('pricing')">← Back</button>
+    <button class="btn btn-gold" onclick="switchPanel('export');generatePreview()">Generate Proposal →</button>
+  </div>
+</div>
+
+
+<!-- ==================== PANEL 8: EXPORT ==================== -->
+<div class="panel" id="panel-export">
+  <div class="sec-header">
+    <div class="sec-title">Export Client Proposal</div>
+    <div class="sec-sub">Review, print as professional PDF, or copy to send via Telegram/Email</div>
+  </div>
+  <div class="notice notice-green">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+    <p>All data is compiled below. Use "Print / Save as PDF" for a professional formatted document. Use "Copy Text" to paste into Telegram or email.</p>
+  </div>
+  <div class="export-area">
+    <div class="export-toolbar">
+      <button class="btn btn-dark btn-sm" onclick="printProposal()">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9V2h12v7"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+        Print / Save as PDF
+      </button>
+      <button class="btn btn-ghost btn-sm" onclick="copyText()">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+        Copy as Text
+      </button>
+      <button class="btn btn-ghost btn-sm" onclick="saveJSON()">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        Save JSON
+      </button>
+      <button class="btn btn-ghost btn-sm" onclick="generatePreview()">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.51"/></svg>
+        Refresh
+      </button>
+    </div>
+    <div class="export-content" id="export-preview">Click "Refresh" to generate your proposal preview...</div>
+  </div>
+  <div style="margin-top:1rem">
+    <button class="btn btn-ghost" onclick="switchPanel('pricing')">← Back to Pricing</button>
+  </div>
+</div>
+
+<!-- HIDDEN PRINT TEMPLATE -->
+<div id="pdf-template"></div>
+
+</div><!-- end .app -->
+
+<style>
+@media print {
+  body * { visibility: hidden }
+  #pdf-template, #pdf-template * { visibility: visible }
+  #pdf-template { position: absolute; left: 0; top: 0; width: 100%; font-family: 'Space Grotesk', sans-serif; font-size: 11pt; line-height: 1.6; color: #1a1a2e }
+}
+</style>
+
+<script>
+// ===================== THEME =====================
+let darkMode = false;
+function toggleTheme() {
+  darkMode = !darkMode;
+  document.documentElement.setAttribute('data-theme', darkMode ? 'dark' : '');
+  const icon = document.getElementById('theme-icon');
+  icon.innerHTML = darkMode
+    ? '<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>'
+    : '<circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>';
+}
+
+// ===================== DATA =====================
+const FEATURES = {
+  pages:[
+    {id:'f-home',name:'Home / Hero section',desc:'Landing area with name, tagline, call-to-action button',price:5000},
+    {id:'f-about',name:'About / Bio page',desc:'Personal story, background, skills summary',price:3000},
+    {id:'f-portfolio',name:'Portfolio / Work gallery',desc:'Projects, case studies, image gallery with filters',price:4500},
+    {id:'f-cv',name:'Resume / CV page',desc:'Work experience, education, skills timeline',price:2000},
+    {id:'f-services',name:'Services page',desc:'List of offered services with descriptions and pricing',price:3000},
+    {id:'f-blog',name:'Blog / Articles section',desc:'News/blog listing with individual post pages',price:5000},
+    {id:'f-contact',name:'Contact page',desc:'Dedicated page with form, map embed, social links',price:1500},
+    {id:'f-testimonials',name:'Testimonials section',desc:'Client reviews, success stories, star ratings',price:1500},
+    {id:'f-faq',name:'FAQ / Help section',desc:'Accordion FAQ, categorized Q&A',price:1500},
+    {id:'f-team',name:'Team / Staff page',desc:'Team profiles with photos, roles, social links',price:2500},
+    {id:'f-gallery',name:'Photo/Media gallery',desc:'Full-page media gallery with lightbox',price:2000},
+    {id:'f-pricing',name:'Pricing page',desc:'Service tiers, comparison table, CTAs',price:2000},
+  ],
+  design:[
+    {id:'f-responsive',name:'Fully mobile responsive',desc:'Perfect on all screen sizes (phones, tablets, desktop)',price:3000},
+    {id:'f-darkmode',name:'Dark/light mode toggle',desc:'User can switch between themes, preference saved',price:2500},
+    {id:'f-animations',name:'Scroll animations & micro-interactions',desc:'Elements animate on scroll, hover interactions',price:3500},
+    {id:'f-custom-design',name:'Custom branded design',desc:'Unique layout built around client brand identity',price:5000},
+    {id:'f-loading',name:'Custom loading screen / preloader',desc:'Branded intro animation on page load',price:1500},
+    {id:'f-parallax',name:'Parallax / depth effects',desc:'Immersive scrolling depth on hero sections',price:2000},
+    {id:'f-accessibility',name:'Accessibility (WCAG 2.1)',desc:'Screen-reader, keyboard nav, color contrast',price:3000},
+  ],
+  func:[
+    {id:'f-form',name:'Contact form with email delivery',desc:'Working form sending emails via EmailJS or backend',price:2000},
+    {id:'f-multilang',name:'Multi-language support',desc:'i18n with language switcher (2 languages)',price:5000},
+    {id:'f-social',name:'Social media feed',desc:'Instagram, Telegram channel, or YouTube embed',price:2500},
+    {id:'f-analytics',name:'Google Analytics + Search Console',desc:'Full visitor tracking and SEO indexing',price:1000},
+    {id:'f-chat',name:'Live chat widget',desc:'Telegram bot or Tawk.to chat integration',price:1500},
+    {id:'f-booking',name:'Online booking / appointment',desc:'Calendar scheduling, confirmation emails',price:6000},
+    {id:'f-maps',name:'Google Maps integration',desc:'Interactive map with location pinning',price:1000},
+    {id:'f-newsletter',name:'Newsletter / email subscription',desc:'Mailchimp or custom email list signup',price:2000},
+    {id:'f-search',name:'Site search',desc:'Full-text search across site content',price:3000},
+  ],
+  content:[
+    {id:'f-copywriting',name:'Copywriting / content writing',desc:'Professional text written for all pages',price:4000},
+    {id:'f-photo-edit',name:'Photo editing & web optimization',desc:'Resize, compress, color-correct all images',price:1500},
+    {id:'f-icons',name:'Custom icon set design',desc:'Unique icon family matching the brand',price:2500},
+    {id:'f-video',name:'Video background / intro clip',desc:'Video editing and web-optimized export',price:3500},
+    {id:'f-brand',name:'Brand identity creation',desc:'Color palette, typography, brand guide',price:6000},
+    {id:'f-infographic',name:'Custom infographics / illustrations',desc:'Original graphics explaining services/stats',price:3000},
+  ],
+  tech:[
+    {id:'f-seo',name:'Basic SEO setup',desc:'Meta tags, Open Graph, sitemap, robots.txt',price:1500},
+    {id:'f-advseo',name:'Advanced SEO + schema markup',desc:'Structured data, Google Business, keyword strategy',price:4000},
+    {id:'f-hosting-setup',name:'Domain + hosting deployment',desc:'Launch to Netlify/Vercel + domain DNS setup',price:2000},
+    {id:'f-ssl',name:'SSL certificate & HTTPS',desc:'Secure site with padlock — required by Google',price:500},
+    {id:'f-speed',name:'Performance optimization',desc:'Core Web Vitals, lazy loading, caching, 90+ score',price:3000},
+    {id:'f-backup',name:'Automated weekly backups',desc:'Automated site and database backup system',price:1500},
+    {id:'f-maintenance',name:'Monthly maintenance plan',desc:'Updates, monitoring, security patches (per month)',price:3000},
+  ]
+};
+
+const BACKEND_FEATURES = {
+  cms:[
+    {id:'bk-wordpress',name:'WordPress CMS',desc:'Full WordPress setup — client can edit text, images, blog posts',price:8000},
+    {id:'bk-strapi',name:'Strapi / Sanity headless CMS',desc:'Modern headless CMS for React/Next.js sites',price:12000},
+    {id:'bk-airtable',name:'Airtable as backend',desc:'No-code database for listings, portfolios, staff directories',price:6000},
+    {id:'bk-firebase',name:'Firebase / Supabase (serverless)',desc:'Realtime database + auth + storage without managing a server',price:10000},
+  ],
+  db:[
+    {id:'bk-db-design',name:'Database design & setup',desc:'Schema design, tables, relations for your use case',price:8000},
+    {id:'bk-admin',name:'Custom admin dashboard',desc:'Web interface to manage products, users, content, orders',price:18000},
+    {id:'bk-crud',name:'Full CRUD API',desc:'Create/read/update/delete endpoints for all data types',price:12000},
+    {id:'bk-reports',name:'Reports & data export',desc:'PDF/Excel reports, analytics dashboard',price:8000},
+  ],
+  auth:[
+    {id:'bk-login',name:'User login / signup system',desc:'Email/password auth with password reset',price:8000},
+    {id:'bk-social-auth',name:'Social login (Google, Facebook)',desc:'OAuth sign-in with Google or Facebook',price:5000},
+    {id:'bk-roles',name:'Role-based access (admin/user/staff)',desc:'Different permission levels per user type',price:6000},
+    {id:'bk-otp',name:'Phone OTP verification (Telebirr/SMS)',desc:'SMS one-time password for Ethiopian numbers',price:7000},
+    {id:'bk-profile',name:'User profile & dashboard',desc:'Editable profile, history, settings for logged-in users',price:10000},
+  ],
+  ecom:[
+    {id:'bk-products',name:'Product catalog & inventory',desc:'Add/edit products, categories, stock management',price:15000},
+    {id:'bk-cart',name:'Shopping cart & checkout',desc:'Cart, order summary, discount codes',price:12000},
+    {id:'bk-payment-tele',name:'Telebirr payment integration',desc:'Accept Telebirr payments online',price:10000},
+    {id:'bk-payment-cbe',name:'CBE Birr / bank API integration',desc:'CBE or Awash bank payment API',price:12000},
+    {id:'bk-orders',name:'Order management system',desc:'Order tracking, status updates, delivery management',price:10000},
+    {id:'bk-invoice',name:'Auto invoice generation',desc:'PDF invoice sent on every order',price:5000},
+  ],
+  api:[
+    {id:'bk-google',name:'Google Maps / Places API',desc:'Location search, business info auto-fill',price:3000},
+    {id:'bk-telegram-bot',name:'Telegram bot notifications',desc:'Auto-notifications via Telegram for orders/leads',price:5000},
+    {id:'bk-email-api',name:'Transactional email (SendGrid)',desc:'Professional email system for receipts, resets, alerts',price:4000},
+    {id:'bk-whatsapp',name:'WhatsApp Business API',desc:'Send order confirmations and alerts via WhatsApp',price:7000},
+    {id:'bk-third',name:'3rd party API integration',desc:'Connect any external service (weather, stock, etc.)',price:8000},
+  ],
+  infra:[
+    {id:'bk-vps',name:'VPS / cloud server setup (DigitalOcean)',desc:'Dedicated server, Nginx, SSL, firewall, PM2',price:8000},
+    {id:'bk-ci',name:'CI/CD pipeline (GitHub Actions)',desc:'Auto-deploy on every code push',price:5000},
+    {id:'bk-cdn',name:'CDN + media storage (Cloudflare + S3)',desc:'Fast global delivery for images and files',price:6000},
+    {id:'bk-monitoring',name:'Uptime monitoring & alerts',desc:'Instant notification if site goes down',price:3000},
+    {id:'bk-gdpr',name:'GDPR / privacy compliance setup',desc:'Cookie consent, privacy policy, data request handling',price:5000},
+  ]
+};
+
+const ADDONS = [
+  {id:'a-logo',name:'Logo design package',desc:'Full logo + variations + brand colors + source files',price:7000},
+  {id:'a-flyer',name:'Social media flyer pack (5 designs)',desc:'Branded templates for Instagram/Telegram/Facebook',price:4000},
+  {id:'a-business-card',name:'Business card design (print-ready)',desc:'Double-sided, CMYK, sent to printer',price:2000},
+  {id:'a-letterhead',name:'Letterhead + email signature',desc:'Official branded stationery for documents',price:2500},
+  {id:'a-presentation',name:'PowerPoint / Canva pitch deck',desc:'Branded slide deck (10–15 slides)',price:5000},
+  {id:'a-maintenance-mo',name:'Monthly maintenance retainer',desc:'Updates, backups, monitoring, content edits (per month)',price:4000,isMonthly:true},
+  {id:'a-training',name:'Client training session (2hr)',desc:'Teach client how to manage their site',price:2000},
+  {id:'a-seo-monthly',name:'Monthly SEO service',desc:'Keyword tracking, content tips, Google ranking reports',price:6000,isMonthly:true},
+  {id:'a-custom',name:'Custom add-on (specify)',desc:'Enter a custom service and its price',price:0,isCustom:true},
+];
+
+const TIMELINE_LABELS = ['3 days','5 days','1 week','2 weeks','3 weeks','1 month','6 weeks','2 months'];
+
+const BIZ_TYPES = [
+  {id:'individual',icon:'👤',name:'Individual / Freelancer',desc:'Portfolio, CV site'},
+  {id:'small',icon:'🏪',name:'Small Business',desc:'1–20 staff, local'},
+  {id:'medium',icon:'🏢',name:'Medium Business',desc:'20–100 staff'},
+  {id:'enterprise',icon:'🏭',name:'Large Enterprise',desc:'100+ staff'},
+  {id:'ngo',icon:'🌍',name:'NGO / Non-profit',desc:'Charity, development'},
+  {id:'government',icon:'🏛️',name:'Government / Public',desc:'Municipality, ministry'},
+  {id:'startup',icon:'🚀',name:'Startup',desc:'Tech, early-stage'},
+  {id:'church',icon:'⛪',name:'Church / Religious',desc:'Congregation, ministry'},
+  {id:'school',icon:'🎓',name:'School / Education',desc:'College, training center'},
+  {id:'healthcare',icon:'🏥',name:'Healthcare / Clinic',desc:'Hospital, clinic, doctor'},
+  {id:'media',icon:'📺',name:'Media / Content',desc:'News, YouTube, blog'},
+  {id:'ecommerce',icon:'🛍️',name:'E-commerce',desc:'Online store, products'},
+];
+
+const TIERS = [
+  {name:'Starter',price:'5,000–15,000',unit:'ETB',desc:'Simple 1–3 page site, no backend. Individual / freelancer.',color:'var(--text2)'},
+  {name:'Standard',price:'15,000–40,000',unit:'ETB',desc:'5–8 pages, contact form, SEO. Small business / NGO.',color:'var(--blue)'},
+  {name:'Professional',price:'40,000–90,000',unit:'ETB',desc:'Full site + CMS + backend. Medium biz / startup.',color:'var(--accent2)'},
+  {name:'Enterprise',price:'90,000–200,000+',unit:'ETB',desc:'Custom platform, DB, integrations. Large org / gov.',color:'var(--red)'},
+];
+
+const EXAMPLE_SITES = [
+  {
+    cat:'🏢 Corporate / Business / SaaS',
+    catDesc:'Show these for businesses, startups, agencies, and professional services',
+    sites:[
+      {name:'Stripe',url:'https://stripe.com',emoji:'💳',desc:'The gold standard of SaaS design. Precise typography, animated product demos, deep trust signals. Dark hero transitions to light sections seamlessly.',tags:['Dark hero','Animations','Enterprise','Trust']},
+      {name:'Linear',url:'https://linear.app',emoji:'⚡',desc:'Minimal dark masterpiece. Every pixel earns its place. Fast animations, monochrome palette with a single accent. Called "the most beautiful dark site" by designers globally.',tags:['Dark','Minimal','Developer','Animations']},
+      {name:'Vercel',url:'https://vercel.com',emoji:'▲',desc:'Terminal-aesthetic meets editorial. Bold typography, black-and-white palette broken only by subtle gradients. Zero clutter, infinite authority.',tags:['Dark','Editorial','Bold typography','Clean']},
+      {name:'Framer',url:'https://framer.com',emoji:'🎬',desc:'A design tool whose site proves what design tools can do. Buttery scroll animations, micro-interactions, animated text reveals. The "wow" effect done tastefully.',tags:['Animations','Bold','Interactive','Creative']},
+      {name:'Pitch',url:'https://pitch.com',emoji:'📊',desc:'Smooth, bold and modern. Dark backgrounds with rich color accents. Buttery animations and confident typography. Screams "premium product".',tags:['Dark','Bold','Colorful','Smooth']},
+      {name:'Loom',url:'https://loom.com',emoji:'🎥',desc:'Warm, human, and approachable. Vibrant purple palette, real-person photography. Balances playfulness with professionalism perfectly.',tags:['Colorful','Human','Warm','Friendly']},
+      {name:'Raycast',url:'https://raycast.com',emoji:'🚀',desc:'Dark with bold red accents and abstract visuals. Strong personality. Shows how a "developer tool" can have stunning design flair without sacrificing clarity.',tags:['Dark','Bold','Developer','Brand identity']},
+    ]
+  },
+  {
+    cat:'👤 Personal Portfolio / CV / Freelancer',
+    catDesc:'Perfect examples for doctors, engineers, developers, designers, lawyers, consultants',
+    sites:[
+      {name:'Rauno Freiberg',url:'https://rauno.me',emoji:'🎨',desc:'Typography-first white portfolio. Perfectly calibrated spacing, zero decoration. Every detail is deliberate. The benchmark for refined minimalism.',tags:['Minimal','Typography','White','Portfolio']},
+      {name:'Lee Robinson',url:'https://leerob.io',emoji:'💻',desc:'Senior developer at Vercel. Content-first, ultra-fast, professional. Shows how a portfolio can be powerful through restraint rather than animation.',tags:['Developer','Content','Clean','Fast']},
+      {name:'Bruno Simon',url:'https://bruno-simon.com',emoji:'🚗',desc:'3D interactive portfolio — the user drives a toy car to navigate. Wildly memorable. Perfect for creatives who want to make a lasting impression.',tags:['3D','Interactive','Creative','Unique']},
+      {name:'Brittany Chiang',url:'https://brittanychiang.com',emoji:'🌊',desc:'Dark teal developer portfolio. Scroll-based reveal animations, sticky side nav, beautifully structured. One of the most cloned portfolios on GitHub.',tags:['Dark','Developer','Animations','Popular']},
+      {name:'Josh Comeau',url:'https://joshwcomeau.com',emoji:'✨',desc:'Playful developer blog-portfolio hybrid. Custom animations, candy colors, delightful micro-interactions. Proves technical people can have personality.',tags:['Playful','Colorful','Developer','Blog']},
+      {name:'Cassie Evans',url:'https://www.cassie.codes',emoji:'🌸',desc:'Illustrative, hand-drawn aesthetic meets clean code. SVG animations throughout. Great for artists and designers wanting a unique personal identity.',tags:['Illustrative','Animated SVG','Creative','Personal']},
+      {name:'Adham Dannaway',url:'https://www.adhamdannaway.com',emoji:'🎭',desc:'Famous for its half-designer / half-developer split-screen toggle. Iconic concept that communicates dual skills at a glance. Unforgettable and shareable.',tags:['Creative concept','Split screen','Memorable','Developer+Designer']},
+    ]
+  },
+  {
+    cat:'🌍 NGO / Non-profit / Charity',
+    catDesc:'For NGOs, churches, community groups, and cause-driven organizations',
+    sites:[
+      {name:'charity: water',url:'https://charitywater.org',emoji:'💧',desc:'The benchmark for NGO design. Radical transparency — donors see exactly where money goes. Emotional storytelling + clean data visualization. Won multiple Webby Awards.',tags:['Storytelling','Transparency','Photography','Impact']},
+      {name:'Obama Foundation',url:'https://obama.org',emoji:'🌟',desc:'2025 Webby Award Winner. Bold homepage video + unique split-screen scroll interaction. Left panel anchors narrative while right scrolls. Civic, authoritative, beautiful.',tags:['Video hero','Scroll interaction','Award-winning','Civic']},
+      {name:'Malala Fund',url:'https://malala.org',emoji:'📚',desc:'Clean navigation, real video content, prominent donation CTA on every page. Shows how to convert emotion into action without overwhelming the user.',tags:['Clean','Video','CTAs','Mission-driven']},
+      {name:'Doctors Without Borders',url:'https://msf.org',emoji:'🏥',desc:'Urgency and clarity in perfect tension. High-impact photography combined with clear hierarchy. The donation flow is frictionless. A masterclass in crisis communication design.',tags:['Photography','Urgent','Trust','Clear hierarchy']},
+      {name:'WaterAid',url:'https://wateraid.org',emoji:'🚿',desc:'Strong hero video, excellent impact storytelling, intuitive filtering system. Balances emotional pull with informational clarity. Farm Africa-nominated for similar approach.',tags:['Video','Storytelling','Filtering','Impact data']},
+      {name:'Gates Foundation',url:'https://gatesfoundation.org',emoji:'🌐',desc:'Corporate-grade nonprofit design. Data storytelling, warm photography, accessibility-first. Shows how large organizations project trust through calm, confident design.',tags:['Data','Trust','Accessibility','Large-scale']},
+    ]
+  },
+  {
+    cat:'🏛️ Government / Public Institution / Education',
+    catDesc:'For government bodies, universities, schools, hospitals, public services',
+    sites:[
+      {name:'Gov.uk',url:'https://gov.uk',emoji:'👑',desc:'The world\'s most studied government website. Radical clarity — plain language, maximum accessibility, zero decoration. The UX is the feature. Used as a global benchmark.',tags:['Accessibility','Government','Clarity','Plain language']},
+      {name:'Harvard University',url:'https://harvard.edu',emoji:'🎓',desc:'Prestigious and clean. Strong photography, clear information hierarchy. Shows how traditional institutions maintain authority while feeling modern.',tags:['University','Authority','Photography','Editorial']},
+      {name:'MIT',url:'https://mit.edu',emoji:'⚗️',desc:'Bold red identity, editorial layout, research-forward. Dense information presented with clarity. Serious academic credibility with modern design sensibility.',tags:['Bold identity','Academic','Research','Editorial']},
+      {name:'Khan Academy',url:'https://khanacademy.org',emoji:'🧠',desc:'Friendly, colorful, highly accessible. Designed for maximum inclusivity across ages and languages. The learning-platform aesthetic done right.',tags:['Friendly','Colorful','Educational','Accessible']},
+      {name:'WHO',url:'https://who.int',emoji:'🌍',desc:'Global health authority. Neutral, multi-language, data-heavy. Shows how to handle massive content depth while keeping navigation usable.',tags:['Government','Multi-language','Data-heavy','Global']},
+      {name:'Space.com / NASA',url:'https://nasa.gov',emoji:'🚀',desc:'NASA\'s site balances public information with genuine awe. Dark backgrounds, stunning imagery, clear mission hierarchy. Shows government sites can still inspire.',tags:['Dark','Inspiring','Government','Photography']},
+    ]
+  },
+  {
+    cat:'🛍️ E-commerce / Products / Retail',
+    catDesc:'For online stores, restaurants, product businesses, retail brands',
+    sites:[
+      {name:'Allbirds',url:'https://allbirds.com',emoji:'👟',desc:'Earthy, sustainable aesthetic. Soft colors, generous whitespace, beautiful product photography. The brand story is woven into every scroll. Warm and trustworthy.',tags:['Earthy','Sustainable','Product photos','Brand story']},
+      {name:'Ugmonk',url:'https://ugmonk.com',emoji:'📦',desc:'Luxury minimal product design. Editorial photography, refined typography, slow-paced layouts that let products breathe. Feel: a premium magazine come to life.',tags:['Luxury','Minimal','Editorial','Typography']},
+      {name:'Glossier',url:'https://glossier.com',emoji:'💄',desc:'Millennial pink, soft, human. User-generated content integrated into the store. Makes beauty feel accessible, community-driven, real.',tags:['Soft','Community','UGC','Feminine']},
+      {name:'Cuyana',url:'https://cuyana.com',emoji:'👜',desc:'Luxury fashion done right. Clean white, editorial photography, refined navigation. "Fewer, better things" — the brand philosophy is the design.',tags:['Luxury','Fashion','Clean','Editorial']},
+      {name:'Bellroy',url:'https://bellroy.com',emoji:'👝',desc:'Product explanation through beautiful interactive demos. Animated comparisons that literally show how the wallet works. UX innovation meets retail.',tags:['Interactive','Product demos','Animated','Clever UX']},
+      {name:'Ceros (creative e-com inspiration)',url:'https://www.ceros.com',emoji:'🎪',desc:'Interactive content at its finest. Every page is an experience. Use this to show clients what "wow" looks like when budget allows.',tags:['Interactive','Creative','High-end','Showcase']},
+    ]
+  },
+  {
+    cat:'🏥 Healthcare / Medical / Clinic',
+    catDesc:'For doctors, clinics, hospitals, pharmacies, wellness centers',
+    sites:[
+      {name:'One Medical',url:'https://onemedical.com',emoji:'🩺',desc:'Calm blue-green palette, professional photography, clear service hierarchy. Patients feel safe before they\'ve even read a word. Trust through color and composition.',tags:['Trust','Calm','Medical','Professional']},
+      {name:'Hims & Hers',url:'https://forhims.com',emoji:'💊',desc:'Modern, approachable healthcare. Breaks medical sterility with warm tones and direct copy. Clear symptom-to-solution user flows. Converts fear into confidence.',tags:['Modern','Approachable','Clear flows','Warm']},
+      {name:'Cleveland Clinic',url:'https://clevelandclinic.org',emoji:'🏥',desc:'World-class hospital with a world-class site. Massive content, exceptional search UX. Patient finder, condition library, and appointment flows all work flawlessly.',tags:['Large-scale','Content-rich','Patient UX','Authority']},
+      {name:'Headspace',url:'https://headspace.com',emoji:'🧘',desc:'Wellness and mental health done beautifully. Illustrated characters, soft gradients, playful but calming. Proves healthcare design doesn\'t have to be sterile.',tags:['Illustrated','Soft','Mental health','Calming']},
+      {name:'Zocdoc',url:'https://zocdoc.com',emoji:'📅',desc:'Healthcare booking solved. Friction-free appointment scheduling. Search, filter by insurance, see availability in real-time. UX that removes every possible barrier.',tags:['Booking','Functional','Clear UX','Appointments']},
+      {name:'Calm',url:'https://calm.com',emoji:'🌊',desc:'Serenity as a design language. Deep blue gradients, ambient animations, whisper-quiet typography. The site itself makes you feel better before you\'ve downloaded the app.',tags:['Serene','Dark blue','Ambient','Wellness']},
+    ]
+  },
+  {
+    cat:'🎨 Creative / Artist / Photography Portfolio',
+    catDesc:'For artists, photographers, musicians, filmmakers, architects',
+    sites:[
+      {name:'Awwwards',url:'https://awwwards.com',emoji:'🏆',desc:'The ultimate gallery of award-winning web design. Browse to find cutting-edge creative work that matches any style your client imagines. Essential starting point.',tags:['Awards','Showcase','Cutting-edge','Inspiration']},
+      {name:'Bruno Simon',url:'https://bruno-simon.com',emoji:'🚗',desc:'3D interactive portfolio — a toy car navigates the site. The most shared creative portfolio online. Shows what\'s possible when creativity has no limits.',tags:['3D','Interactive','Unique','Viral']},
+      {name:'Active Theory',url:'https://activetheory.net',emoji:'🌌',desc:'WebGL-powered immersive portfolio. Dark, cinematic, full-screen 3D environments. The pinnacle of creative agency design in 2024–2025.',tags:['WebGL','3D','Cinematic','Agency']},
+      {name:'Wokine',url:'https://wokine.com',emoji:'🎭',desc:'French creative agency. Textured, earthy, analog-meets-digital. Scroll reveals feel like turning pages of a luxury magazine. Deeply distinctive.',tags:['Textured','Earthy','French','Luxury']},
+      {name:'Dribbble',url:'https://dribbble.com',emoji:'🎯',desc:'Community of world-class designers. Browse to find any style — minimal, bold, dark, playful, luxury. Share with client and ask "which of these feels right to you?"',tags:['Community','Browse','All styles','Inspiration']},
+      {name:'Behance',url:'https://behance.net',emoji:'🖼️',desc:'Adobe\'s portfolio platform. Full case studies from concept to completion. Great for showing clients the design process, not just the result.',tags:['Case studies','Process','Adobe','All styles']},
+    ]
+  },
+  {
+    cat:'🍽️ Restaurant / Food / Hospitality',
+    catDesc:'For restaurants, cafés, hotels, catering services, food businesses',
+    sites:[
+      {name:'Nobu Restaurant',url:'https://noburestaurants.com',emoji:'🍣',desc:'Luxury Japanese restaurant chain. Dark, moody photography, elegant typography. The site oozes exclusivity without saying a word.',tags:['Dark','Luxury','Photography','Moody']},
+      {name:'Alinea Group',url:'https://alineagroup.com',emoji:'⭐',desc:'Michelin-star restaurant site. Minimal, confident, photography-led. Reservation flow is frictionless. Shows what "fine dining online" should feel like.',tags:['Minimal','Fine dining','Reservations','Photography']},
+      {name:'Sweetgreen',url:'https://sweetgreen.com',emoji:'🥗',desc:'Fresh, earthy, and warm. Green palette, natural photography, strong social proof. Makes healthy food feel exciting and accessible.',tags:['Fresh','Green','Earthy','Menu UX']},
+      {name:'Momofuku',url:'https://momofuku.com',emoji:'🍜',desc:'Editorial restaurant design. White with bold black typography. Feels like a food magazine. Multi-location navigation handled elegantly.',tags:['Editorial','Bold','Restaurant','Multi-location']},
+      {name:'Ace Hotel',url:'https://acehotel.com',emoji:'🏨',desc:'Independent hotel brand. Artistic, neighborhood-focused, editorial. Each city location feels distinct. Strong brand personality without a rigid template.',tags:['Hotel','Artistic','Brand identity','Editorial']},
+      {name:'Noma (archived)',url:'https://noma.dk',emoji:'🌿',desc:'The world\'s best restaurant\'s website. Sparse, raw, Nordic. No decoration — just mission and story. For clients who want "less is more" taken to the extreme.',tags:['Sparse','Nordic','Minimal','Story-first']},
+    ]
+  },
+];
+
+// ── INSPIRATION CONVERSATION STARTERS ──
+const CONVERSATION_STARTERS = [
+  'Which of these feels closest to what you want?',
+  'Do you prefer dark or light backgrounds?',
+  'More images or more text?',
+  'Bold and animated, or clean and minimal?',
+  'Should it feel corporate, warm/friendly, or creative/artistic?',
+  'Any colors you love or want to avoid?',
+  'Who is your biggest competitor — what does their site look like?',
+];
+
+let selectedBizType = '';
+let selectedTier = '';
+
+// ===================== INIT =====================
+function init() {
+  renderBizTypes();
+  renderTiers();
+  renderFeatureGroup('feat-pages', FEATURES.pages);
+  renderFeatureGroup('feat-design', FEATURES.design);
+  renderFeatureGroup('feat-func', FEATURES.func);
+  renderFeatureGroup('feat-content', FEATURES.content);
+  renderFeatureGroup('feat-tech', FEATURES.tech);
+  renderFeatureGroup('feat-cms', BACKEND_FEATURES.cms);
+  renderFeatureGroup('feat-db', BACKEND_FEATURES.db);
+  renderFeatureGroup('feat-auth', BACKEND_FEATURES.auth);
+  renderFeatureGroup('feat-ecom', BACKEND_FEATURES.ecom);
+  renderFeatureGroup('feat-api', BACKEND_FEATURES.api);
+  renderFeatureGroup('feat-infra', BACKEND_FEATURES.infra);
+  renderAddons();
+  renderExamples();
+  calcPricing();
+  calcProgress();
+}
+
+// ===================== BIZ TYPES =====================
+function renderBizTypes() {
+  const el = document.getElementById('biz-type-grid');
+  el.innerHTML = BIZ_TYPES.map(b => `
+    <div class="biz-opt" id="biz-${b.id}" onclick="selectBizType('${b.id}')">
+      <div class="biz-opt-icon">${b.icon}</div>
+      <div class="biz-opt-name">${b.name}</div>
+      <div class="biz-opt-desc">${b.desc}</div>
+    </div>
+  `).join('');
+}
+function selectBizType(id) {
+  selectedBizType = id;
+  document.querySelectorAll('.biz-opt').forEach(el => el.classList.remove('biz-selected'));
+  document.getElementById('biz-' + id).classList.add('biz-selected');
+  calcProgress();
+}
+
+// ===================== TIERS =====================
+function renderTiers() {
+  const el = document.getElementById('tier-grid');
+  el.innerHTML = TIERS.map((t,i) => `
+    <div class="tier-card" id="tier-${i}" onclick="selectTier(${i})">
+      <div class="tier-name">${t.name}</div>
+      <div class="tier-price" style="color:${t.color}">${t.price} <small>${t.unit}</small></div>
+      <div class="tier-desc">${t.desc}</div>
+    </div>
+  `).join('');
+}
+function selectTier(i) {
+  selectedTier = i;
+  document.querySelectorAll('.tier-card').forEach(el => el.classList.remove('selected'));
+  document.getElementById('tier-' + i).classList.add('selected');
+}
+
+// ===================== FEATURES =====================
+function renderFeatureGroup(containerId, items) {
+  const el = document.getElementById(containerId);
+  if (!el) return;
+  el.innerHTML = items.map(f => `
     <div class="feature-item" id="wrap-${f.id}" onclick="toggleFeature('${f.id}')">
       <input type="checkbox" id="${f.id}" onchange="calcPricing()">
       <div class="custom-check">
-        <svg width="10" height="10" viewBox="0 0 12 12" fill="none" stroke="#fff" stroke-width="2.5"><polyline points="1.5 6 4.5 9 10.5 3"/></svg>
+        <svg width="9" height="9" viewBox="0 0 12 12" fill="none" stroke="#fff" stroke-width="2.5"><polyline points="1.5 6 4.5 9 10.5 3"/></svg>
       </div>
       <div class="feature-info">
         <div class="feature-name">${f.name}</div>
@@ -1433,385 +1334,532 @@
       <div class="feature-price">+${f.price.toLocaleString()} ETB</div>
     </div>
   `).join('');
-        }
+}
 
-        function renderFeatures() {
-            renderFeatureGroup('feat-pages', FEATURES.pages);
-            renderFeatureGroup('feat-design', FEATURES.design);
-            renderFeatureGroup('feat-func', FEATURES.func);
-            renderFeatureGroup('feat-content', FEATURES.content);
-            renderFeatureGroup('feat-tech', FEATURES.tech);
-        }
+function toggleFeature(id) {
+  const cb = document.getElementById(id);
+  cb.checked = !cb.checked;
+  document.getElementById('wrap-' + id).classList.toggle('checked', cb.checked);
+  calcPricing(); calcProgress();
+}
 
-        function toggleFeature(id) {
-            const cb = document.getElementById(id);
-            cb.checked = !cb.checked;
-            const wrap = document.getElementById('wrap-' + id);
-            wrap.classList.toggle('checked', cb.checked);
-            calcPricing();
-            calcProgress();
-        }
+function toggleContentCheck(el, id) {
+  const cb = document.getElementById(id);
+  cb.checked = !cb.checked;
+  el.classList.toggle('checked', cb.checked);
+  calcProgress();
+}
 
-        // ============================================================
-        // RENDER ADDONS
-        // ============================================================
-        function renderAddons() {
-            const el = document.getElementById('addon-list');
-            el.innerHTML = ADDONS.map(a => `
-    <div class="addon-row">
-      <input type="checkbox" id="${a.id}" onchange="calcPricing(); calcProgress()">
-      <div class="addon-lbl">
-        <strong>${a.name}</strong>${a.isMonthly ? ' <span class="pill pill-amber">monthly</span>' : ''}
-        <div style="font-size:12px;color:var(--text2)">${a.desc}</div>
+// ===================== ADDONS =====================
+function renderAddons() {
+  const el = document.getElementById('addon-list');
+  el.innerHTML = ADDONS.map(a => `
+    <div class="addon-row" id="addon-row-${a.id}" onclick="toggleAddon('${a.id}',event)">
+      <input type="checkbox" id="${a.id}" onchange="calcPricing();calcProgress()" onclick="event.stopPropagation()">
+      <div class="addon-lbl-wrap">
+        <strong>${a.name}</strong>${a.isMonthly ? ' <span class="pill pill-gold">monthly</span>' : ''}
+        <p>${a.desc}</p>
       </div>
       ${a.isCustom
-                    ? `<input type="number" id="${a.id}-custom-price" placeholder="Price" value="0" min="0" style="width:110px" oninput="calcPricing()">`
-                    : `<span class="addon-price">${a.price > 0 ? a.price.toLocaleString() + ' ETB' : '—'}</span>`
-                }
+        ? `<input type="number" id="${a.id}-custom-price" class="addon-custom-input" placeholder="ETB" value="0" min="0" oninput="calcPricing()" onclick="event.stopPropagation()">`
+        : `<span class="addon-price">${a.price > 0 ? a.price.toLocaleString() + ' ETB' : '—'}</span>`}
     </div>
   `).join('');
-        }
+}
 
-        // ============================================================
-        // CALCULATE PRICING
-        // ============================================================
-        function getCheckedFeatureTotal() {
-            let total = 0;
-            const all = [...FEATURES.pages, ...FEATURES.design, ...FEATURES.func, ...FEATURES.content, ...FEATURES.tech];
-            all.forEach(f => {
-                const cb = document.getElementById(f.id);
-                if (cb && cb.checked) total += f.price;
-            });
-            return total;
-        }
+function toggleAddon(id, e) {
+  const cb = document.getElementById(id);
+  cb.checked = !cb.checked;
+  document.getElementById('addon-row-' + id).classList.toggle('checked-row', cb.checked);
+  calcPricing(); calcProgress();
+}
 
-        function calcPricing() {
-            const featureTotal = getCheckedFeatureTotal();
-            const override = parseFloat(document.getElementById('price-override')?.value) || 0;
-            const discount = parseFloat(document.getElementById('price-discount')?.value) || 0;
-            const rush = document.getElementById('p-rush')?.checked;
 
-            let base = override > 0 ? override : featureTotal;
-            if (base === 0) base = 0;
+// ===================== PRICING =====================
+function getAllFeatures() {
+  return [
+    ...FEATURES.pages,...FEATURES.design,...FEATURES.func,...FEATURES.content,...FEATURES.tech,
+    ...BACKEND_FEATURES.cms,...BACKEND_FEATURES.db,...BACKEND_FEATURES.auth,
+    ...BACKEND_FEATURES.ecom,...BACKEND_FEATURES.api,...BACKEND_FEATURES.infra
+  ];
+}
 
-            // Support addon
-            const support = document.getElementById('support')?.value;
-            let supportExtra = 0;
-            if (support === '30') supportExtra = 500;
-            if (support === '60') supportExtra = 1200;
+function calcPricing() {
+  let total = 0;
+  const all = getAllFeatures();
+  all.forEach(f => { const cb = document.getElementById(f.id); if (cb && cb.checked) total += f.price; });
 
-            // Addons
-            let addonTotal = 0;
-            let addonLines = [];
-            ADDONS.forEach(a => {
-                const cb = document.getElementById(a.id);
-                if (cb && cb.checked) {
-                    let price = a.price;
-                    if (a.isCustom) {
-                        price = parseFloat(document.getElementById(a.id + '-custom-price')?.value) || 0;
-                    }
-                    addonTotal += price;
-                    addonLines.push({ name: a.name + (a.isMonthly ? '/mo' : ''), val: price });
-                }
-            });
+  const override = parseFloat(document.getElementById('price-override')?.value) || 0;
+  const discount = parseFloat(document.getElementById('price-discount')?.value) || 0;
+  const rush = document.getElementById('p-rush')?.checked;
 
-            let subtotal = base + addonTotal + supportExtra;
-            let rushFee = rush ? Math.round(base * 0.3) : 0;
-            subtotal += rushFee;
-            const finalTotal = Math.max(0, subtotal - discount);
+  let base = override > 0 ? override : total;
 
-            const depositPct = parseFloat(document.getElementById('deposit-pct')?.value) || 50;
-            const deposit = Math.round(finalTotal * (depositPct / 100));
-            const remaining = finalTotal - deposit;
+  const support = document.getElementById('support')?.value;
+  let supportExtra = 0;
+  if (support === '30') supportExtra = 1500;
+  if (support === '60') supportExtra = 3500;
+  if (support === '90') supportExtra = 6000;
 
-            // Build lines
-            const lines = [];
-            if (override > 0) lines.push({ lbl: 'Base price (override)', val: override });
-            else if (base > 0) lines.push({ lbl: 'Features total', val: base });
-            if (addonLines.length) addonLines.forEach(l => lines.push({ lbl: l.name, val: l.val }));
-            if (supportExtra > 0) lines.push({ lbl: 'Extended support', val: supportExtra });
-            if (rushFee > 0) lines.push({ lbl: 'Rush delivery (+30%)', val: rushFee });
-            if (discount > 0) lines.push({ lbl: 'Discount / reduction', val: -discount });
+  let addonTotal = 0, addonLines = [];
+  ADDONS.forEach(a => {
+    const cb = document.getElementById(a.id);
+    if (cb && cb.checked) {
+      let price = a.isCustom ? (parseFloat(document.getElementById(a.id + '-custom-price')?.value) || 0) : a.price;
+      addonTotal += price;
+      addonLines.push({name: a.name + (a.isMonthly ? '/mo' : ''), val: price});
+    }
+  });
 
-            const renderLines = (id) => {
-                const el = document.getElementById(id);
-                if (!el) return;
-                el.innerHTML = lines.map(l => `
-      <div class="summary-line">
+  let subtotal = base + addonTotal + supportExtra;
+  let rushFee = rush ? Math.round(base * 0.30) : 0;
+  subtotal += rushFee;
+  const finalTotal = Math.max(0, subtotal - discount);
+  const depositPct = parseFloat(document.getElementById('deposit-pct')?.value) || 50;
+  const deposit = Math.round(finalTotal * depositPct / 100);
+  const remaining = finalTotal - deposit;
+
+  const lines = [];
+  if (override > 0) lines.push({lbl:'Base price (override)', val:override});
+  else if (base > 0) lines.push({lbl:'Features total', val:base});
+  addonLines.forEach(l => lines.push({lbl:l.name, val:l.val}));
+  if (supportExtra > 0) lines.push({lbl:'Extended support', val:supportExtra});
+  if (rushFee > 0) lines.push({lbl:'Rush delivery (+30%)', val:rushFee});
+  if (discount > 0) lines.push({lbl:'Discount', val:-discount});
+
+  const fmt = v => v.toLocaleString() + ' ETB';
+  const renderLines = id => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.innerHTML = lines.map(l => `
+      <div class="sum-line">
         <span class="lbl">${l.lbl}</span>
-        <span class="val" style="${l.val < 0 ? 'color:var(--green)' : ''}">${l.val < 0 ? '-' : '+'}${Math.abs(l.val).toLocaleString()} ETB</span>
+        <span class="val" style="${l.val<0?'color:var(--green)':''}">${l.val<0?'-':'+'}${Math.abs(l.val).toLocaleString()} ETB</span>
       </div>
-    `).join('') + `<div class="summary-line" style="font-weight:600;border-top:1px solid var(--border2);padding-top:10px;margin-top:4px">
-      <span class="lbl" style="color:var(--text)">Total</span>
-      <span class="val" style="color:var(--accent2)">${finalTotal.toLocaleString()} ETB</span>
-    </div>`;
-            };
+    `).join('') + `
+      <div class="sum-line" style="font-weight:700;padding-top:8px;border-top:2px solid var(--border2)">
+        <span style="color:var(--text)">Total</span>
+        <span style="color:var(--accent2);font-family:var(--font-mono)">${finalTotal.toLocaleString()} ETB</span>
+      </div>`;
+  };
 
-            const fmt = v => v.toLocaleString() + ' ETB';
-            ['sum-total', 'sum-total2'].forEach(id => {
-                const el = document.getElementById(id);
-                if (el) el.innerHTML = `${finalTotal.toLocaleString()} ETB<br><small>estimated total</small>`;
-            });
-            ['sum-deposit', 'sum-deposit2'].forEach(id => {
-                const el = document.getElementById(id);
-                if (el) el.textContent = fmt(deposit);
-            });
-            ['sum-remaining', 'sum-remaining2'].forEach(id => {
-                const el = document.getElementById(id);
-                if (el) el.textContent = fmt(remaining);
-            });
-            renderLines('sum-lines');
-            renderLines('sum-lines2');
+  ['sum-total','sum-total-bk','sum-total2'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.innerHTML = `${finalTotal.toLocaleString()} ETB<small>${id==='sum-total2'?'total project cost':'estimated total'}</small>`;
+  });
+  ['sum-deposit','sum-deposit-bk','sum-deposit2'].forEach(id => {
+    const el = document.getElementById(id); if (el) el.textContent = fmt(deposit);
+  });
+  ['sum-remaining','sum-remaining-bk','sum-remaining2'].forEach(id => {
+    const el = document.getElementById(id); if (el) el.textContent = fmt(remaining);
+  });
+  renderLines('sum-lines'); renderLines('sum-lines-bk'); renderLines('sum-lines2');
 
-            // Store for export
-            window._pricing = { base, featureTotal, addonTotal, rushFee, supportExtra, discount, finalTotal, deposit, remaining, depositPct, lines };
-        }
+  window._pricing = {base, total, addonTotal, rushFee, supportExtra, discount, finalTotal, deposit, remaining, depositPct, lines};
+}
 
-        // ============================================================
-        // PROGRESS
-        // ============================================================
-        function calcProgress() {
-            const fields = [
-                'c-name', 'c-email', 'c-phone', 'c-city',
-                'c-profession', 'c-org', 'c-type',
-                'p-name', 'p-type', 'p-goal', 'p-audience', 'p-style', 'p-lang'
-            ];
-            let filled = fields.filter(id => {
-                const el = document.getElementById(id);
-                return el && el.value && el.value.trim() !== '';
-            }).length;
-            const featChecked = document.querySelectorAll('.feature-item.checked').length;
-            if (featChecked > 0) filled += Math.min(3, featChecked);
-            const pct = Math.min(100, Math.round((filled / (fields.length + 3)) * 100));
-            document.getElementById('prog-fill').style.width = pct + '%';
-            document.getElementById('pct-label').textContent = pct + '%';
+// ===================== PROGRESS =====================
+function calcProgress() {
+  const fields = ['c-name','c-email','c-phone','c-type','p-name','p-type','p-goal','p-audience','p-style','p-lang','biz-sector'];
+  let filled = fields.filter(id => { const el = document.getElementById(id); return el && el.value && el.value.trim() !== ''; }).length;
+  const checked = document.querySelectorAll('.feature-item.checked').length;
+  if (checked > 0) filled += Math.min(4, checked);
+  if (selectedBizType) filled += 2;
+  const pct = Math.min(100, Math.round(filled / (fields.length + 6) * 100));
+  document.getElementById('prog-fill').style.width = pct + '%';
+  document.getElementById('pct-label').textContent = pct + '%';
+  const p1 = ['c-name','c-email','c-type'];
+  const p2 = ['p-name','p-type','p-goal'];
+  if (p1.every(id => document.getElementById(id)?.value)) document.getElementById('tab-client').classList.add('done');
+  if (p2.every(id => document.getElementById(id)?.value)) document.getElementById('tab-project').classList.add('done');
+  if (selectedBizType) document.getElementById('tab-biz').classList.add('done');
+}
 
-            // Mark done tabs
-            const panel1Fields = ['c-name', 'c-email', 'c-type'];
-            const panel2Fields = ['p-name', 'p-type', 'p-goal'];
-            if (panel1Fields.every(id => document.getElementById(id)?.value)) {
-                document.getElementById('tab-client').classList.add('done');
-            }
-            if (panel2Fields.every(id => document.getElementById(id)?.value)) {
-                document.getElementById('tab-project').classList.add('done');
-            }
-        }
+// ===================== TIMELINE =====================
+function updateTimeline(v) {
+  document.getElementById('timeline-val').textContent = TIMELINE_LABELS[v-1] || v + ' weeks';
+}
 
-        // ============================================================
-        // TIMELINE
-        // ============================================================
-        function updateTimeline(val) {
-            document.getElementById('timeline-val').textContent = TIMELINE_LABELS[val - 1] || val + ' weeks';
-        }
+// ===================== PANEL SWITCHING =====================
+function switchPanel(name) {
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.step-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('panel-' + name).classList.add('active');
+  document.getElementById('tab-' + name).classList.add('active');
+  window.scrollTo({top:0,behavior:'smooth'});
+}
 
-        // ============================================================
-        // PANEL SWITCHING
-        // ============================================================
-        function switchPanel(name) {
-            document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
-            document.querySelectorAll('.step-tab').forEach(t => t.classList.remove('active'));
-            document.getElementById('panel-' + name).classList.add('active');
-            document.getElementById('tab-' + name).classList.add('active');
-            state.activePanel = name;
-            if (name === 'export') generatePreview();
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
+// ===================== COLLECT =====================
+function collectData() {
+  const gv = id => document.getElementById(id)?.value || '';
+  const gc = id => document.getElementById(id)?.checked || false;
+  const tl = parseInt(document.getElementById('p-timeline')?.value || 2);
 
-        // ============================================================
-        // COLLECT DATA
-        // ============================================================
-        function collectData() {
-            const gv = id => document.getElementById(id)?.value || '';
-            const gc = id => document.getElementById(id)?.checked || false;
+  const allFeatures = getAllFeatures();
+  const checkedFeatures = allFeatures.filter(f => document.getElementById(f.id)?.checked).map(f => ({name:f.name, price:f.price}));
 
-            const checkedFeatures = [];
-            const allFeatures = [...FEATURES.pages, ...FEATURES.design, ...FEATURES.func, ...FEATURES.content, ...FEATURES.tech];
-            allFeatures.forEach(f => {
-                if (document.getElementById(f.id)?.checked) {
-                    checkedFeatures.push({ name: f.name, price: f.price });
-                }
-            });
+  const checkedAddons = ADDONS.filter(a => document.getElementById(a.id)?.checked).map(a => ({
+    name: a.name,
+    price: a.isCustom ? (parseFloat(document.getElementById(a.id+'-custom-price')?.value) || 0) : a.price,
+    monthly: a.isMonthly || false
+  }));
 
-            const checkedAddons = [];
-            ADDONS.forEach(a => {
-                if (document.getElementById(a.id)?.checked) {
-                    const price = a.isCustom
-                        ? (parseFloat(document.getElementById(a.id + '-custom-price')?.value) || 0)
-                        : a.price;
-                    checkedAddons.push({ name: a.name, price, monthly: a.isMonthly || false });
-                }
-            });
+  const contentReady = {
+    photo:gc('cnt-photo'), bio:gc('cnt-bio'), portfolio:gc('cnt-portfolio'),
+    cv:gc('cnt-cv'), domain:gc('cnt-domain'), logo:gc('cnt-logo'),
+    products:gc('cnt-products'), hosting:gc('cnt-hosting')
+  };
 
-            const tl = parseInt(document.getElementById('p-timeline')?.value || 2);
+  const bizType = BIZ_TYPES.find(b => b.id === selectedBizType);
 
-            return {
-                client: {
-                    name: gv('c-name'), email: gv('c-email'), phone: gv('c-phone'), city: gv('c-city'),
-                    profession: gv('c-profession'), org: gv('c-org'), type: gv('c-type'), source: gv('c-source'),
-                    notes: gv('c-notes')
-                },
-                project: {
-                    name: gv('p-name'), type: gv('p-type'), goal: gv('p-goal'), audience: gv('p-audience'),
-                    style: gv('p-style'), lang: gv('p-lang'), timeline: TIMELINE_LABELS[tl - 1],
-                    rush: gc('p-rush'), refs: gv('p-refs'),
-                    contentReady: {
-                        photo: gc('cnt-photo'), bio: gc('cnt-bio'), portfolio: gc('cnt-portfolio'),
-                        cv: gc('cnt-cv'), domain: gc('cnt-domain')
-                    }
-                },
-                features: checkedFeatures,
-                addons: checkedAddons,
-                pricing: window._pricing || {},
-                terms: {
-                    revisions: gv('revisions'), support: gv('support'),
-                    depositPct: gv('deposit-pct'), paymentMethod: gv('payment-method')
-                }
-            };
-        }
+  return {
+    client: {name:gv('c-name'),email:gv('c-email'),phone:gv('c-phone'),city:gv('c-city'),profession:gv('c-profession'),org:gv('c-org'),type:gv('c-type'),source:gv('c-source'),notes:gv('c-notes'),urgency:gv('c-urgency'),confidence:gv('c-confidence'),decision:gv('c-decision'),contactMethod:gv('c-contact'),budget:gv('c-budget')},
+    project: {name:gv('p-name'),type:gv('p-type'),goal:gv('p-goal'),audience:gv('p-audience'),style:gv('p-style'),lang:gv('p-lang'),timeline:TIMELINE_LABELS[tl-1],rush:gc('p-rush'),refs:gv('p-refs'),pages:gv('p-pages'),contentReady},
+    business: {type:bizType?.name||selectedBizType||'—',size:gv('biz-size'),sector:gv('biz-sector'),revenue:gv('biz-revenue'),existing:gv('biz-existing'),techLevel:gv('biz-tech'),manager:gv('biz-manage'),compliance:gv('biz-compliance')},
+    tech: {frontend:gv('bk-frontend'),backend:gv('bk-backend'),database:gv('bk-db'),hosting:gv('bk-hosting')},
+    features: checkedFeatures,
+    addons: checkedAddons,
+    pricing: window._pricing || {},
+    terms: {revisions:gv('revisions'),support:gv('support'),depositPct:gv('deposit-pct'),paymentMethod:gv('payment-method'),paymentSchedule:gv('payment-schedule'),currency:gv('invoice-currency')}
+  };
+}
 
-        // ============================================================
-        // GENERATE PREVIEW
-        // ============================================================
-        function generatePreview() {
-            calcPricing();
-            const d = collectData();
-            const p = d.pricing;
-            const now = new Date();
-            const dateStr = now.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+// ===================== GENERATE PREVIEW =====================
+function generatePreview() {
+  calcPricing();
+  const d = collectData();
+  const p = d.pricing;
+  const now = new Date();
+  const dateStr = now.toLocaleDateString('en-US', {year:'numeric',month:'long',day:'numeric'});
+  const validUntil = new Date(now.getTime() + 14*24*60*60*1000).toLocaleDateString('en-US', {year:'numeric',month:'long',day:'numeric'});
+  const pad = (s,n) => String(s).padEnd(n,' ');
+  const sep = '─'.repeat(58);
+  const box = (txt) => `╔${'═'.repeat(60)}╗\n║  ${txt.padEnd(58)}║\n╚${'═'.repeat(60)}╝`;
 
-            const line = (lbl, val) => `  ${lbl.padEnd(32, '.')} ${val}`;
-            const section = title => `\n${'═'.repeat(56)}\n  ${title.toUpperCase()}\n${'═'.repeat(56)}`;
+  const contentList = Object.entries(d.project.contentReady).filter(([,v])=>v).map(([k])=>({photo:'Profile photos',bio:'Bio/About text',portfolio:'Portfolio samples',cv:'CV/Resume',domain:'Domain name',logo:'Logo/Brand assets',products:'Product info',hosting:'Hosting account'}[k]||k)).join(', ') || 'None confirmed yet';
 
-            const contentList = Object.entries(d.project.contentReady)
-                .filter(([, v]) => v).map(([k]) => k).join(', ') || 'None confirmed';
+  const frontFeatures = d.features.filter(f => {
+    const allBk = [...BACKEND_FEATURES.cms,...BACKEND_FEATURES.db,...BACKEND_FEATURES.auth,...BACKEND_FEATURES.ecom,...BACKEND_FEATURES.api,...BACKEND_FEATURES.infra];
+    return !allBk.find(b => b.name === f.name);
+  });
+  const backFeatures = d.features.filter(f => {
+    const allBk = [...BACKEND_FEATURES.cms,...BACKEND_FEATURES.db,...BACKEND_FEATURES.auth,...BACKEND_FEATURES.ecom,...BACKEND_FEATURES.api,...BACKEND_FEATURES.infra];
+    return allBk.find(b => b.name === f.name);
+  });
 
-            const featList = d.features.length
-                ? d.features.map(f => `  ✓ ${f.name} (${f.price.toLocaleString()} ETB)`).join('\n')
-                : '  (No features selected)';
+  const preview = `
+${box('  CLIENT PROPOSAL — WEB DEVELOPMENT PROJECT')}
+     Prepared by: Yabsira Dejene (Yabu)  |  Date: ${dateStr}
+     Valid Until: ${validUntil}
+     Ref: PROJ-${Date.now().toString().slice(-6)}
 
-            const addonList = d.addons.length
-                ? d.addons.map(a => `  + ${a.name} — ${a.price.toLocaleString()} ETB${a.monthly ? '/mo' : ''}`).join('\n')
-                : '  (No add-ons selected)';
+${sep}
+  SECTION 1 — PARTIES
+${sep}
 
-            const pricingLines = (p.lines || []).map(l =>
-                `  ${l.lbl.padEnd(30, '.')} ${l.val < 0 ? '-' : '+'}${Math.abs(l.val).toLocaleString()} ETB`
-            ).join('\n');
+  FREELANCER
+  Name        : Yabsira Dejene (Yabu)
+  Specialty   : Full-Stack Web Development & UI/UX Design
+  Contact     : [your phone] | [your email]
+  Location    : Dire Dawa, Ethiopia
+  Portfolio   : [your website URL]
 
-            const preview = `
-╔══════════════════════════════════════════════════════╗
-║         CLIENT PROPOSAL — WEB DEVELOPMENT           ║
-║            Generated: ${dateStr.padEnd(30)}║
-╚══════════════════════════════════════════════════════╝
-${section('1. Parties')}
-${line('Freelancer', 'Yabsira Dejene (Yabu)')}
-${line('Client Name', d.client.name || '(not filled)')}
-${line('Email', d.client.email || '—')}
-${line('Phone / Telegram', d.client.phone || '—')}
-${line('Location', d.client.city || '—')}
-${line('Profession', d.client.profession || '—')}
-${line('Organization', d.client.org || '—')}
-${line('Client Type', d.client.type || '—')}
-${line('Referral Source', d.client.source || '—')}
+  CLIENT
+  Name        : ${d.client.name || '(not filled)'}
+  Email       : ${d.client.email || '—'}
+  Phone       : ${d.client.phone || '—'}
+  Location    : ${d.client.city || '—'}
+  Profession  : ${d.client.profession || '—'}
+  Organization: ${d.client.org || '—'}
+  Client Type : ${d.client.type || '—'}
+  Contact Via : ${d.client.contactMethod || '—'}
+  Found via   : ${d.client.source || '—'}
+${d.client.notes ? `\n  Meeting Notes:\n  "${d.client.notes}"` : ''}
 
-${d.client.notes ? `Notes from discovery call:\n  "${d.client.notes}"` : ''}
-${section('2. Project Overview')}
-${line('Project Name', d.project.name || '(not filled)')}
-${line('Website Type', d.project.type || '—')}
-${line('Primary Goal', d.project.goal || '—')}
-${line('Target Audience', d.project.audience || '—')}
-${line('Design Style', d.project.style || '—')}
-${line('Language(s)', d.project.lang || '—')}
-${line('Delivery Timeline', d.project.timeline + (d.project.rush ? ' [RUSH +30%]' : ''))}
-${line('Content Ready', contentList)}
+${sep}
+  SECTION 2 — BUSINESS PROFILE
+${sep}
 
-${d.project.refs ? `Inspiration / References:\n  ${d.project.refs}` : ''}
-${section('3. Scope of Work — Features')}
-${featList}
-${section('4. Add-on Services')}
-${addonList}
-${section('5. Pricing Breakdown')}
-${pricingLines || '  (No features selected yet)'}
-  ${'─'.repeat(44)}
-${line('  TOTAL PROJECT COST', (p.finalTotal || 0).toLocaleString() + ' ETB')}
-${line('  Upfront Deposit (' + (p.depositPct || 50) + '%)', (p.deposit || 0).toLocaleString() + ' ETB')}
-${line('  Balance on Delivery', (p.remaining || 0).toLocaleString() + ' ETB')}
-${section('6. Terms & Conditions')}
-${line('Revision Rounds', d.terms.revisions || '1')}
-${line('Post-launch Support', d.terms.support ? d.terms.support + ' days' : '14 days')}
-${line('Payment Method', d.terms.paymentMethod || '(not specified)')}
+  Business Type   : ${d.business.type || '—'}
+  Industry Sector : ${d.business.sector || '—'}
+  Team Size       : ${d.business.size || '—'}
+  Revenue Range   : ${d.business.revenue || '—'}
+  Existing Site   : ${d.business.existing || 'None — new site'}
+  Tech Level      : ${d.business.techLevel || '—'}
+  Who Manages     : ${d.business.manager || '—'}
+  Compliance Needs: ${d.business.compliance || 'None specified'}
+  Budget Range    : ${d.client.budget || '—'}
+  Urgency Level   : ${d.client.urgency || '—'}
 
-  Standard Terms:
-  • 50% deposit required before any work begins
-  • Client must deliver all content by agreed deadline
-  • Additional revisions beyond included rounds billed separately
-  • Client owns final deliverables; freelancer retains portfolio rights
-  • Rush delivery (3–5 days) subject to +30% surcharge
-  • Quoted price valid for 14 days from proposal date
-${section('7. Signature & Acceptance')}
-  By proceeding with the deposit payment, the client agrees
-  to the scope and terms outlined in this proposal.
+${sep}
+  SECTION 3 — PROJECT OVERVIEW
+${sep}
 
-  Freelancer: Yabsira Dejene ________________  Date: ________
+  Project Name   : ${d.project.name || '(not filled)'}
+  Website Type   : ${d.project.type || '—'}
+  Primary Goal   : ${d.project.goal || '—'}
+  Target Audience: ${d.project.audience || '—'}
+  Design Style   : ${d.project.style || '—'}
+  Language(s)    : ${d.project.lang || '—'}
+  Pages Count    : ${d.project.pages || '—'}
+  Timeline       : ${d.project.timeline}${d.project.rush ? ' ⚠ RUSH DELIVERY (+30%)' : ''}
+  Content Ready  : ${contentList}
 
-  Client: _____________________________  Date: ________
+  Tech Stack Selected:
+    Frontend  : ${d.tech.frontend || 'Your choice (recommended)'}
+    Backend   : ${d.tech.backend || 'Your choice (recommended)'}
+    Database  : ${d.tech.database || 'Your choice (recommended)'}
+    Hosting   : ${d.tech.hosting || 'Your choice (recommended)'}
+${d.project.refs ? `\n  References / Inspiration:\n  ${d.project.refs}` : ''}
+
+${sep}
+  SECTION 4 — SCOPE OF WORK
+${sep}
+
+  FRONT-END FEATURES:
+${frontFeatures.length ? frontFeatures.map(f => `    ✓  ${pad(f.name, 40)}${f.price.toLocaleString()} ETB`).join('\n') : '    (No front-end features selected)'}
+
+  BACK-END / CMS / DATABASE:
+${backFeatures.length ? backFeatures.map(f => `    ✓  ${pad(f.name, 40)}${f.price.toLocaleString()} ETB`).join('\n') : '    (No backend features selected — front-end only)'}
+
+  ADD-ON SERVICES:
+${d.addons.length ? d.addons.map(a => `    +  ${pad(a.name + (a.monthly ? ' (monthly)' : ''), 40)}${a.price.toLocaleString()} ETB`).join('\n') : '    (None selected)'}
+
+${sep}
+  SECTION 5 — PRICING BREAKDOWN
+${sep}
+${(p.lines||[]).map(l => `    ${pad(l.lbl, 38)}${l.val<0?'-':'+'}${Math.abs(l.val).toLocaleString()} ETB`).join('\n')}
+  ${'─'.repeat(58)}
+    ${pad('TOTAL PROJECT COST', 38)}${(p.finalTotal||0).toLocaleString()} ETB
+    ${pad('Upfront Deposit (' + (p.depositPct||50) + '%)', 38)}${(p.deposit||0).toLocaleString()} ETB
+    ${pad('Balance on Delivery', 38)}${(p.remaining||0).toLocaleString()} ETB
+
+  Note: Prices in Ethiopian Birr (ETB). Quote valid for 14 days.
+
+${sep}
+  SECTION 6 — TERMS & CONDITIONS
+${sep}
+
+  Revisions       : ${d.terms.revisions || '1'} round(s) included
+  Support Period  : ${d.terms.support !== 'none' ? d.terms.support + ' days bug-fix support' : 'No support period'}
+  Payment Method  : ${d.terms.paymentMethod || '(not specified)'}
+  Payment Schedule: ${d.terms.paymentSchedule || '50% upfront + 50% on delivery'}
+  Invoice Currency: ${d.terms.currency || 'ETB'}
+
+  STANDARD TERMS:
+  1. A deposit of ${d.terms.depositPct||50}% is required before any work begins.
+  2. Client must provide all content (text, images, logo) by agreed deadline.
+     Delays in content delivery will delay the project timeline accordingly.
+  3. Revisions beyond included rounds billed at 500–2,000 ETB per round
+     depending on scope.
+  4. Client owns all final deliverables upon full payment. Freelancer retains
+     right to display project in portfolio.
+  5. Rush delivery (under 1 week) is subject to a 30% surcharge.
+  6. This quote is valid for 14 days from the proposal date.
+  7. Any new features added after project start require a new quote.
+  8. Hosting, domain, and third-party API costs are NOT included unless
+     explicitly listed above.
+
+${sep}
+  SECTION 7 — ACCEPTANCE
+${sep}
+
+  By proceeding with the deposit payment, the client confirms they have
+  read, understood, and agree to all terms in this proposal.
+
+  FREELANCER SIGNATURE:
+  Yabsira Dejene (Yabu) _______________________  Date: ___________
+
+  CLIENT SIGNATURE:
+  ${(d.client.name||'Client Name').padEnd(34)}___  Date: ___________
 
 
-  ── End of Proposal ──
+  ══ End of Proposal — Yabsira Dejene Web Development ══
 `.trim();
 
-            document.getElementById('export-preview').textContent = preview;
-            window._exportText = preview;
-        }
+  document.getElementById('export-preview').textContent = preview;
+  window._exportText = preview;
+  window._exportData = d;
+}
 
-        // ============================================================
-        // EXPORT FUNCTIONS
-        // ============================================================
-        function exportPDF() {
-            generatePreview();
-            window.print();
-        }
+// ===================== PRINT / PDF =====================
+function printProposal() {
+  generatePreview();
+  const d = window._exportData || collectData();
+  const p = d?.pricing || {};
+  const now = new Date();
+  const dateStr = now.toLocaleDateString('en-US', {year:'numeric',month:'long',day:'numeric'});
+  const validUntil = new Date(now.getTime()+14*24*60*60*1000).toLocaleDateString('en-US',{year:'numeric',month:'long',day:'numeric'});
 
-        function copyText() {
-            generatePreview();
-            const text = window._exportText || '';
-            navigator.clipboard.writeText(text).then(() => {
-                alert('Proposal copied to clipboard! Paste it into Telegram, email, or Word.');
-            }).catch(() => {
-                alert('Could not copy automatically. Please select all text in the preview and copy manually (Ctrl+A, Ctrl+C).');
-            });
-        }
+  const frontFeatures = d.features?.filter(f => {
+    const allBk = [...BACKEND_FEATURES.cms,...BACKEND_FEATURES.db,...BACKEND_FEATURES.auth,...BACKEND_FEATURES.ecom,...BACKEND_FEATURES.api,...BACKEND_FEATURES.infra];
+    return !allBk.find(b => b.name === f.name);
+  }) || [];
+  const backFeatures = d.features?.filter(f => {
+    const allBk = [...BACKEND_FEATURES.cms,...BACKEND_FEATURES.db,...BACKEND_FEATURES.auth,...BACKEND_FEATURES.ecom,...BACKEND_FEATURES.api,...BACKEND_FEATURES.infra];
+    return allBk.find(b => b.name === f.name);
+  }) || [];
 
-        function saveJSON() {
-            const d = collectData();
-            const blob = new Blob([JSON.stringify(d, null, 2)], { type: 'application/json' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            const clientName = (d.client.name || 'client').toLowerCase().replace(/\s+/g, '-');
-            a.href = url;
-            a.download = `proposal-${clientName}-${Date.now()}.json`;
-            a.click();
-            URL.revokeObjectURL(url);
-        }
+  const section = (num, title, color) => `
+    <div style="background:${color};border-radius:8px;padding:12px 16px;margin:20px 0 12px;page-break-inside:avoid">
+      <span style="font-size:10px;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;opacity:0.7">Section ${num}</span>
+      <div style="font-size:16px;font-weight:700;color:#fff;margin-top:2px">${title}</div>
+    </div>`;
 
-        function resetAll() {
-            if (!confirm('Reset all data? This cannot be undone.')) return;
-            document.querySelectorAll('input[type="text"], input[type="email"], input[type="tel"], textarea').forEach(el => el.value = '');
-            document.querySelectorAll('input[type="number"]').forEach(el => el.value = el.id === 'price-override' || el.id === 'price-discount' ? '0' : el.value);
-            document.querySelectorAll('select').forEach(el => el.selectedIndex = 0);
-            document.querySelectorAll('input[type="checkbox"]').forEach(el => el.checked = false);
-            document.querySelectorAll('.feature-item').forEach(el => el.classList.remove('checked'));
-            document.getElementById('p-timeline').value = 2;
-            updateTimeline(2);
-            calcPricing();
-            calcProgress();
-            switchPanel('client');
-        }
+  const row = (label, value) => value && value !== '—' ? `
+    <tr>
+      <td style="padding:5px 8px;font-size:11px;color:#666;width:160px;vertical-align:top">${label}</td>
+      <td style="padding:5px 8px;font-size:11px;color:#1a1a2e;font-weight:500">${value}</td>
+    </tr>` : '';
 
-        // ============================================================
-        // BOOT
-        // ============================================================
-        init();
-    </script>
+  const html = `
+    <div style="font-family:'Space Grotesk',sans-serif;max-width:750px;margin:0 auto;padding:20px;color:#1a1a2e">
+      
+      <div style="border-bottom:3px solid #c9a84c;padding-bottom:16px;margin-bottom:20px;display:flex;justify-content:space-between;align-items:flex-start">
+        <div>
+          <div style="font-size:22px;font-weight:800;color:#1a1a2e;line-height:1.1">WEB DEVELOPMENT</div>
+          <div style="font-size:22px;font-weight:800;color:#c9a84c;line-height:1.1">CLIENT PROPOSAL</div>
+          <div style="font-size:12px;color:#888;margin-top:8px">Prepared by Yabsira Dejene (Yabu) • ${dateStr}</div>
+        </div>
+        <div style="text-align:right">
+          <div style="background:#1a1a2e;color:#fff;border-radius:10px;padding:10px 16px;font-size:11px;font-weight:700;letter-spacing:0.05em">YD</div>
+          <div style="font-size:10px;color:#999;margin-top:6px">Ref: PROJ-${Date.now().toString().slice(-6)}</div>
+          <div style="font-size:10px;color:#999">Valid until: ${validUntil}</div>
+        </div>
+      </div>
+
+      ${section(1,'Client & Project Summary','#1a1a2e')}
+      <table style="width:100%;border-collapse:collapse">
+        ${row('Client Name', d.client?.name)}
+        ${row('Email', d.client?.email)}
+        ${row('Phone', d.client?.phone)}
+        ${row('Organization', d.client?.org)}
+        ${row('Client Type', d.client?.type)}
+        ${row('Project Name', d.project?.name)}
+        ${row('Website Type', d.project?.type)}
+        ${row('Primary Goal', d.project?.goal)}
+        ${row('Target Audience', d.project?.audience)}
+        ${row('Design Style', d.project?.style)}
+        ${row('Language(s)', d.project?.lang)}
+        ${row('Timeline', d.project?.timeline + (d.project?.rush ? ' ⚠ RUSH +30%' : ''))}
+        ${row('Business Sector', d.business?.sector)}
+        ${row('Business Size', d.business?.size)}
+      </table>
+
+      ${section(2,'Scope of Work','#2a4fa0')}
+      ${frontFeatures.length ? `
+        <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.07em;color:#888;margin-bottom:6px">Front-end Features</div>
+        <table style="width:100%;border-collapse:collapse">
+          ${frontFeatures.map(f=>`<tr><td style="padding:4px 0;font-size:12px;color:#1a1a2e">✓ ${f.name}</td><td style="text-align:right;font-size:12px;color:#5a5870;font-family:monospace">${f.price.toLocaleString()} ETB</td></tr>`).join('')}
+        </table>` : ''}
+      ${backFeatures.length ? `
+        <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.07em;color:#888;margin:12px 0 6px">Backend / CMS / Database</div>
+        <table style="width:100%;border-collapse:collapse">
+          ${backFeatures.map(f=>`<tr><td style="padding:4px 0;font-size:12px;color:#1a1a2e">⚙ ${f.name}</td><td style="text-align:right;font-size:12px;color:#5a5870;font-family:monospace">${f.price.toLocaleString()} ETB</td></tr>`).join('')}
+        </table>` : ''}
+      ${d.addons?.length ? `
+        <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.07em;color:#888;margin:12px 0 6px">Add-on Services</div>
+        <table style="width:100%;border-collapse:collapse">
+          ${d.addons.map(a=>`<tr><td style="padding:4px 0;font-size:12px;color:#1a1a2e">+ ${a.name}${a.monthly?' (monthly)':''}</td><td style="text-align:right;font-size:12px;color:#5a5870;font-family:monospace">${a.price.toLocaleString()} ETB</td></tr>`).join('')}
+        </table>` : ''}
+
+      ${section(3,'Pricing Breakdown','#1a7a4a')}
+      <table style="width:100%;border-collapse:collapse">
+        ${(p.lines||[]).map(l=>`<tr><td style="padding:5px 8px;font-size:12px;color:#555">${l.lbl}</td><td style="text-align:right;padding:5px 8px;font-size:12px;font-family:monospace;color:${l.val<0?'#1a7a4a':'#1a1a2e'}">${l.val<0?'-':'+'}${Math.abs(l.val).toLocaleString()} ETB</td></tr>`).join('')}
+        <tr style="border-top:2px solid #1a1a2e">
+          <td style="padding:10px 8px;font-size:14px;font-weight:700;color:#1a1a2e">TOTAL PROJECT COST</td>
+          <td style="text-align:right;padding:10px 8px;font-size:14px;font-weight:700;color:#c9a84c;font-family:monospace">${(p.finalTotal||0).toLocaleString()} ETB</td>
+        </tr>
+        <tr style="background:#f0f9f4">
+          <td style="padding:8px;font-size:13px;color:#1a7a4a;font-weight:600">Upfront Deposit (${p.depositPct||50}%)</td>
+          <td style="text-align:right;padding:8px;font-size:13px;font-weight:700;color:#1a7a4a;font-family:monospace">${(p.deposit||0).toLocaleString()} ETB</td>
+        </tr>
+        <tr>
+          <td style="padding:8px;font-size:13px;color:#555">Balance on Delivery</td>
+          <td style="text-align:right;padding:8px;font-size:13px;font-family:monospace;color:#555">${(p.remaining||0).toLocaleString()} ETB</td>
+        </tr>
+      </table>
+
+      ${section(4,'Terms & Conditions','#7a3ea0')}
+      <div style="font-size:11px;color:#444;line-height:1.8">
+        <p><b>Revisions:</b> ${d.terms?.revisions||'1'} round(s) included. Additional revisions billed at 500–2,000 ETB/round.</p>
+        <p><b>Post-launch Support:</b> ${d.terms?.support !== 'none' ? d.terms?.support + ' days bug-fix support included' : 'No post-launch support period'}</p>
+        <p><b>Payment:</b> ${d.terms?.paymentSchedule || d.terms?.depositPct + '% upfront, remainder on delivery'}. Payment via ${d.terms?.paymentMethod||'TBD'}.</p>
+        <p><b>Content:</b> Client must deliver all content (text, images, logo) within 3 business days of deposit.</p>
+        <p><b>Ownership:</b> Client owns all deliverables upon full payment. Freelancer retains portfolio rights.</p>
+        <p><b>Validity:</b> This quote is valid for 14 days from ${dateStr}.</p>
+        <p><b>Out of scope:</b> Hosting/domain fees, 3rd-party API subscription costs, stock photography.</p>
+      </div>
+
+      <div style="margin-top:30px;border-top:1px solid #ddd;padding-top:20px">
+        <div style="font-size:12px;font-weight:700;color:#1a1a2e;margin-bottom:16px">SIGNATURES</div>
+        <div style="display:flex;gap:40px">
+          <div style="flex:1">
+            <div style="border-bottom:1px solid #1a1a2e;margin-bottom:6px;height:40px"></div>
+            <div style="font-size:11px;color:#555">Yabsira Dejene (Yabu) — Freelancer</div>
+            <div style="font-size:10px;color:#999;margin-top:2px">Date: ___________________</div>
+          </div>
+          <div style="flex:1">
+            <div style="border-bottom:1px solid #1a1a2e;margin-bottom:6px;height:40px"></div>
+            <div style="font-size:11px;color:#555">${d.client?.name||'Client'} — Client</div>
+            <div style="font-size:10px;color:#999;margin-top:2px">Date: ___________________</div>
+          </div>
+        </div>
+      </div>
+
+      <div style="text-align:center;margin-top:24px;font-size:10px;color:#bbb;border-top:1px solid #eee;padding-top:12px">
+        Yabsira Dejene Web Development • Dire Dawa, Ethiopia • Generated ${dateStr}
+      </div>
+    </div>`;
+
+  document.getElementById('pdf-template').innerHTML = html;
+  setTimeout(() => window.print(), 200);
+}
+
+// ===================== COPY TEXT =====================
+function copyText() {
+  generatePreview();
+  const text = window._exportText || '';
+  navigator.clipboard.writeText(text).then(() => {
+    alert('Proposal copied! Paste into Telegram, email, or Word.');
+  }).catch(() => {
+    alert('Please manually select all text in the preview and copy (Ctrl+A, Ctrl+C).');
+  });
+}
+
+// ===================== SAVE JSON =====================
+function saveJSON() {
+  const d = collectData();
+  const blob = new Blob([JSON.stringify(d, null, 2)], {type:'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `proposal-${(d.client.name||'client').toLowerCase().replace(/\s+/g,'-')}-${Date.now()}.json`;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+// ===================== RESET =====================
+function resetAll() {
+  if (!confirm('Reset all data? This cannot be undone.')) return;
+  document.querySelectorAll('input[type="text"],input[type="email"],input[type="tel"],textarea').forEach(el => el.value = '');
+  document.querySelectorAll('input[type="number"]').forEach(el => el.value = (el.id === 'price-override' || el.id === 'price-discount') ? '0' : el.value);
+  document.querySelectorAll('select').forEach(el => el.selectedIndex = 0);
+  document.querySelectorAll('input[type="checkbox"]').forEach(el => el.checked = false);
+  document.querySelectorAll('.feature-item').forEach(el => el.classList.remove('checked'));
+  document.querySelectorAll('.content-check').forEach(el => el.classList.remove('checked'));
+  document.querySelectorAll('.biz-opt').forEach(el => el.classList.remove('biz-selected'));
+  document.querySelectorAll('.tier-card').forEach(el => el.classList.remove('selected'));
+  document.querySelectorAll('.addon-row').forEach(el => el.classList.remove('checked-row'));
+  selectedBizType = ''; selectedTier = '';
+  document.getElementById('p-timeline').value = 2;
+  updateTimeline(2);
+  calcPricing(); calcProgress();
+  switchPanel('client');
+}
+
+// ===================== BOOT =====================
+init();
+</script>
 </body>
-
 </html>
