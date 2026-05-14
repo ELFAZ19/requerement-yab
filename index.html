@@ -1,713 +1,864 @@
 ﻿<!DOCTYPE html>
 <html lang="en">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Yabu Dev — Client Discovery & Pricing Tool</title>
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Playfair+Display:wght@700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-<!-- Marked.js for Markdown rendering -->
-<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-<!-- html2pdf.js for PDF generation -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-<link rel="stylesheet" href="styles.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Yabu Dev — Client Discovery & Pricing Tool</title>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Playfair+Display:wght@700;800&family=JetBrains+Mono:wght@400;500&display=swap"
+    rel="stylesheet">
+  <!-- Marked.js for Markdown rendering -->
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <!-- html2pdf.js for PDF generation -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+  <link rel="stylesheet" href="styles.css">
 </head>
+
 <body>
-<div class="app">
+  <div class="app">
 
-<!-- HEADER -->
-<div class="header">
-  <div class="header-brand">
-    <div class="brand-logo"><span>YD</span></div>
-    <div class="brand-text">
-      <h1>Client Discovery & Pricing</h1>
-      <p>By Yabsira Dejene  · Web Development</p>
-    </div>
-  </div>
-  <div class="header-actions">
-    <button class="theme-toggle" onclick="toggleTheme()" title="Toggle dark/light mode">
-      <svg id="theme-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
-    </button>
-    <button class="btn btn-ghost btn-sm" onclick="resetAll()">
-      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.51"/></svg>
-      Reset
-    </button>
-    <button class="btn btn-gold btn-sm" onclick="switchPanel('export');generatePreview()">
-      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
-      Export Proposal
-    </button>
-  </div>
-</div>
-
-<!-- PROGRESS -->
-<div class="progress-wrap">
-  <div class="progress-meta">
-    <span>Form completion</span>
-    <span class="progress-pct" id="pct-label">0%</span>
-  </div>
-  <div class="progress-bar"><div class="progress-fill" id="prog-fill" style="width:0%"></div></div>
-</div>
-
-<!-- TABS -->
-<div class="steps-nav">
-  <button class="step-tab active" id="tab-client" onclick="switchPanel('client')"><span class="step-num">1</span>Client Info</button>
-  <button class="step-tab" id="tab-project" onclick="switchPanel('project')"><span class="step-num">2</span>Project</button>
-  <button class="step-tab" id="tab-biz" onclick="switchPanel('biz')"><span class="step-num">3</span>Biz Type & Scale</button>
-  <button class="step-tab" id="tab-features" onclick="switchPanel('features')"><span class="step-num">4</span>Features</button>
-  <button class="step-tab" id="tab-backend" onclick="switchPanel('backend')"><span class="step-num">5</span>Backend & CMS</button>
-  <button class="step-tab" id="tab-pricing" onclick="switchPanel('pricing')"><span class="step-num">6</span>Pricing</button>
-  <button class="step-tab" id="tab-export" onclick="switchPanel('export');generatePreview()"><span class="step-num">7</span>Export</button>
-</div>
-
-<!-- ==================== PANEL 1: CLIENT INFO ==================== -->
-<div class="panel active" id="panel-client">
-  <div class="sec-header">
-    <div class="sec-title">Client Information</div>
-    <div class="sec-sub">Basic contact and background details about your client</div>
-  </div>
-  <div class="grid-2">
-    <div class="card">
-      <div class="card-header">
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-        Personal Details
-      </div>
-      <div class="field"><label>Full Name</label><input type="text" id="c-name" placeholder="e.g. Abebe Kebede" oninput="calcProgress()"></div>
-      <div class="field"><label>Email Address</label><input type="email" id="c-email" placeholder="client@email.com" oninput="calcProgress()"></div>
-      <div class="field"><label>Phone / Telegram</label><input type="tel" id="c-phone" placeholder="+251 9xx xxx xxxx" oninput="calcProgress()"></div>
-      <div class="field"><label>Location / City</label><input type="text" id="c-city" placeholder="e.g. Dire Dawa, Addis Ababa" oninput="calcProgress()"></div>
-      <div class="field"><label>Preferred Contact Method</label>
-        <select id="c-contact" onchange="calcProgress()">
-          <option value="">Select...</option>
-          <option>Telegram</option><option>Phone call</option><option>Email</option><option>WhatsApp</option><option>In person</option>
-        </select>
-      </div>
-    </div>
-    <div class="card">
-      <div class="card-header">
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
-        Professional Background
-      </div>
-      <div class="field"><label>Profession / Title</label><input type="text" id="c-profession" placeholder="e.g. Software Engineer, Doctor, Artist" oninput="calcProgress()"></div>
-      <div class="field"><label>Organization / Company</label><input type="text" id="c-org" placeholder="e.g. ABC Trading, Self-employed" oninput="calcProgress()"></div>
-      <div class="field"><label>Client Type</label>
-        <select id="c-type" onchange="calcProgress()">
-          <option value="">Select type...</option>
-          <option>Individual / Freelancer</option>
-          <option>Small business owner</option>
-          <option>Medium business</option>
-          <option>Large enterprise</option>
-          <option>NGO / Non-profit</option>
-          <option>Government institution</option>
-          <option>Startup (early stage)</option>
-          <option>Church / Religious org</option>
-          <option>Educational institution</option>
-          <option>Healthcare provider</option>
-          <option>Media / Content creator</option>
-        </select>
-      </div>
-      <div class="field"><label>Budget Expectation</label>
-        <select id="c-budget" onchange="calcProgress()">
-          <option value="">Client's rough budget...</option>
-          <option value="low">Low — Under 10,000 ETB</option>
-          <option value="med">Medium — 10,000–30,000 ETB</option>
-          <option value="high">Standard — 30,000–60,000 ETB</option>
-          <option value="premium">Premium — 60,000+ ETB</option>
-          <option value="unknown">Not disclosed yet</option>
-        </select>
-      </div>
-      <div class="field"><label>How did they find you?</label>
-        <select id="c-source" onchange="calcProgress()">
-          <option value="">Select...</option>
-          <option>Referral / Word of mouth</option>
-          <option>Social media (Instagram/TikTok)</option>
-          <option>LinkedIn</option>
-          <option>Church / Sunday school community</option>
-          <option>University network</option>
-          <option>Telegram channel</option>
-          <option>Cold outreach by client</option>
-          <option>Repeat client</option>
-          <option>Other</option>
-        </select>
-      </div>
-    </div>
-  </div>
-  <div class="card" style="margin-top:1rem">
-    <div class="card-header">Meeting Notes</div>
-    <div class="grid-2">
-      <div class="field"><label>Notes from call / first meeting</label>
-        <textarea id="c-notes" placeholder="Any useful details from your initial conversation, their pain points, goals, concerns..." rows="4" oninput="calcProgress()"></textarea>
-      </div>
-      <div class="field"><label>Urgency / Priority Level</label>
-        <select id="c-urgency" onchange="calcProgress()">
-          <option value="">Select...</option>
-          <option>Not urgent — exploring options</option>
-          <option>Moderate — within 1–2 months</option>
-          <option>Urgent — within 2–3 weeks</option>
-          <option>Very urgent — ASAP (rush applies)</option>
-        </select>
-        <div class="field" style="margin-top:0.75rem"><label>Decision Maker?</label>
-          <select id="c-decision" onchange="calcProgress()">
-            <option value="">Select...</option>
-            <option>Yes — client decides alone</option>
-            <option>Needs approval from partner/boss</option>
-            <option>Committee / Board must approve</option>
-          </select>
-        </div>
-        <div style="margin-top:0.75rem"><label class="field" style="display:block;font-size:12px;font-weight:500;color:var(--text2);margin-bottom:5px">Confidence of closing deal</label>
-          <select id="c-confidence" onchange="calcProgress()">
-            <option value="">Select...</option>
-            <option>High — very likely to proceed</option>
-            <option>Medium — still considering</option>
-            <option>Low — just researching prices</option>
-          </select>
+    <!-- HEADER -->
+    <div class="header">
+      <div class="header-brand">
+        <div class="brand-logo"><span>YD</span></div>
+        <div class="brand-text">
+          <h1>Client Discovery & Pricing</h1>
+          <p>By Yabsira Dejene · Web Development</p>
         </div>
       </div>
-    </div>
-  </div>
-  <div class="nav-row">
-    <div></div>
-    <button class="btn btn-dark" onclick="switchPanel('project')">Next: Project Details →</button>
-  </div>
-</div>
-
-<!-- ==================== PANEL 2: PROJECT ==================== -->
-<div class="panel" id="panel-project">
-  <div class="sec-header">
-    <div class="sec-title">Project Details</div>
-    <div class="sec-sub">Understand the goal, context, and timeline for this website</div>
-  </div>
-  <div class="grid-2">
-    <div class="card">
-      <div class="card-header">Project Overview</div>
-      <div class="field"><label>Project Name / Working Title</label><input type="text" id="p-name" placeholder="e.g. Dr. Abebe Medical Profile Site" oninput="calcProgress()"></div>
-      <div class="field"><label>Website Type</label>
-        <select id="p-type" onchange="calcProgress()">
-          <option value="">Select...</option>
-          <option>Personal profile / portfolio</option>
-          <option>Business landing page</option>
-          <option>Professional CV site</option>
-          <option>Artist / creative portfolio</option>
-          <option>Blog / content site</option>
-          <option>Corporate / organizational site</option>
-          <option>E-commerce (products)</option>
-          <option>NGO / non-profit site</option>
-          <option>Event / conference page</option>
-          <option>Real estate / property listing</option>
-          <option>Restaurant / food business</option>
-          <option>Healthcare / clinic site</option>
-          <option>School / educational site</option>
-          <option>News / media site</option>
-          <option>Government / public institution</option>
-          <option>Booking / appointment site</option>
-          <option>Directory / listing site</option>
-        </select>
-      </div>
-      <div class="field"><label>Primary Goal</label>
-        <select id="p-goal" onchange="calcProgress()">
-          <option value="">Select main goal...</option>
-          <option>Get freelance clients / leads</option>
-          <option>Get job offers</option>
-          <option>Showcase portfolio / work</option>
-          <option>Build online credibility</option>
-          <option>Sell products / services online</option>
-          <option>Accept online bookings / appointments</option>
-          <option>Share knowledge / blog</option>
-          <option>Promote an event</option>
-          <option>Raise donations / funds</option>
-          <option>Provide information to the public</option>
-          <option>Internal staff portal</option>
-        </select>
-      </div>
-      <div class="field"><label>Target Audience</label>
-        <select id="p-audience" onchange="calcProgress()">
-          <option value="">Select...</option>
-          <option>Potential employers / HR</option>
-          <option>Business clients (B2B)</option>
-          <option>General Ethiopian public</option>
-          <option>International audience</option>
-          <option>Local city audience</option>
-          <option>Creative / artistic community</option>
-          <option>Medical / health patients</option>
-          <option>Students / youth</option>
-          <option>Government officials</option>
-          <option>Donors / NGO supporters</option>
-          <option>Retail customers (B2C)</option>
-        </select>
-      </div>
-    </div>
-    <div class="card">
-      <div class="card-header">Timeline & Style</div>
-      <div class="field">
-        <label>Desired Delivery: <strong id="timeline-val" style="color:var(--accent2)">2 weeks</strong></label>
-        <input type="range" min="1" max="8" value="2" id="p-timeline" oninput="updateTimeline(this.value);calcProgress()">
-        <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--text3);margin-top:4px">
-          <span>3 days</span><span>2 wks</span><span>1 mo</span><span>2 mo</span>
-        </div>
-      </div>
-      <div class="addon-row" style="margin-top:0.75rem;margin-bottom:0.75rem" id="rush-row">
-        <input type="checkbox" id="p-rush" onchange="calcPricing();calcProgress()">
-        <div class="addon-lbl-wrap"><strong>Rush delivery (+30%)</strong> <span class="rush-badge">RUSH</span></div>
-      </div>
-      <div class="field"><label>Design Style Preference</label>
-        <select id="p-style" onchange="calcProgress()">
-          <option value="">Select...</option>
-          <option>Clean & minimal</option>
-          <option>Bold & creative</option>
-          <option>Corporate / professional</option>
-          <option>Dark / futuristic</option>
-          <option>Colorful / playful</option>
-          <option>Elegant / luxury</option>
-          <option>Earthy / African-inspired</option>
-          <option>Religious / traditional</option>
-          <option>Modern medical / clinical</option>
-          <option>Client to decide</option>
-        </select>
-      </div>
-      <div class="field"><label>Preferred Language(s)</label>
-        <select id="p-lang" onchange="calcProgress()">
-          <option value="">Select...</option>
-          <option>English only</option>
-          <option>Amharic only</option>
-          <option>English + Amharic</option>
-          <option>English + Afaan Oromo</option>
-          <option>English + Tigrinya</option>
-          <option>Multilingual (3+)</option>
-        </select>
-      </div>
-      <div class="field"><label>Number of Pages / Sections (estimated)</label>
-        <select id="p-pages" onchange="calcProgress()">
-          <option value="">Select...</option>
-          <option value="1-3">1–3 pages (simple)</option>
-          <option value="4-6">4–6 pages (standard)</option>
-          <option value="7-10">7–10 pages (medium)</option>
-          <option value="11-20">11–20 pages (large)</option>
-          <option value="20+">20+ pages (complex / enterprise)</option>
-        </select>
-      </div>
-    </div>
-  </div>
-  <div class="card" style="margin-top:1rem">
-    <div class="card-header">References & Content</div>
-    <div class="grid-2">
-      <div class="field"><label>Websites they like (URLs or descriptions)</label>
-        <textarea id="p-refs" placeholder="e.g. apple.com — I like the clean layout. Or 'a dark theme with smooth animations'" rows="3" oninput="calcProgress()"></textarea>
-      </div>
-      <div>
-        <label style="display:block;font-size:12px;font-weight:500;color:var(--text2);margin-bottom:8px">Content ready? (check all that apply)</label>
-        <div class="content-checks" id="content-checks">
-          <div class="content-check" onclick="toggleContentCheck(this,'cnt-photo')"><input type="checkbox" id="cnt-photo" onchange="calcProgress()"><span>Profile photo / images</span></div>
-          <div class="content-check" onclick="toggleContentCheck(this,'cnt-bio')"><input type="checkbox" id="cnt-bio" onchange="calcProgress()"><span>Bio / About text</span></div>
-          <div class="content-check" onclick="toggleContentCheck(this,'cnt-portfolio')"><input type="checkbox" id="cnt-portfolio" onchange="calcProgress()"><span>Portfolio / work samples</span></div>
-          <div class="content-check" onclick="toggleContentCheck(this,'cnt-cv')"><input type="checkbox" id="cnt-cv" onchange="calcProgress()"><span>CV / resume</span></div>
-          <div class="content-check" onclick="toggleContentCheck(this,'cnt-domain')"><input type="checkbox" id="cnt-domain" onchange="calcProgress()"><span>Domain name purchased</span></div>
-          <div class="content-check" onclick="toggleContentCheck(this,'cnt-logo')"><input type="checkbox" id="cnt-logo" onchange="calcProgress()"><span>Logo / brand assets</span></div>
-          <div class="content-check" onclick="toggleContentCheck(this,'cnt-products')"><input type="checkbox" id="cnt-products" onchange="calcProgress()"><span>Product info / pricing</span></div>
-          <div class="content-check" onclick="toggleContentCheck(this,'cnt-hosting')"><input type="checkbox" id="cnt-hosting" onchange="calcProgress()"><span>Hosting account</span></div>
-        </div>
-      </div>
-    </div>
-  </div>
-  <div class="nav-row">
-    <button class="btn btn-ghost" onclick="switchPanel('client')">← Back</button>
-    <button class="btn btn-dark" onclick="switchPanel('biz')">Next: Business Type →</button>
-  </div>
-</div>
-
-<!-- ==================== PANEL 3: BIZ TYPE ==================== -->
-<div class="panel" id="panel-biz">
-  <div class="sec-header">
-    <div class="sec-title">Business Type & Scale</div>
-    <div class="sec-sub">This affects which features are recommended and overall pricing range</div>
-  </div>
-  <div class="notice notice-blue">
-    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12" y2="16.5" stroke-width="3"/></svg>
-    <p>Select the type that best describes the client's business. This helps auto-suggest the right features and tier.</p>
-  </div>
-  <div class="biz-grid" id="biz-type-grid"></div>
-
-  <div class="divider">Scale & Complexity</div>
-
-  <div class="grid-2">
-    <div class="card">
-      <div class="card-header">Organization Size</div>
-      <div class="field"><label>Team / Staff Size</label>
-        <select id="biz-size" onchange="calcProgress()">
-          <option value="">Select...</option>
-          <option value="solo">Solo / 1 person</option>
-          <option value="micro">Micro — 2–5 people</option>
-          <option value="small">Small — 6–20 people</option>
-          <option value="medium">Medium — 21–100 people</option>
-          <option value="large">Large — 100+ people</option>
-        </select>
-      </div>
-      <div class="field"><label>Annual Revenue / Budget Range</label>
-        <select id="biz-revenue" onchange="calcProgress()">
-          <option value="">Select...</option>
-          <option>Pre-revenue / startup</option>
-          <option>Under 500,000 ETB/year</option>
-          <option>500K – 2M ETB/year</option>
-          <option>2M – 10M ETB/year</option>
-          <option>10M+ ETB/year</option>
-          <option>NGO / grant-funded</option>
-          <option>Government / public funded</option>
-        </select>
-      </div>
-      <div class="field"><label>Industry / Sector</label>
-        <select id="biz-sector" onchange="calcProgress()">
-          <option value="">Select...</option>
-          <option>Technology / IT</option>
-          <option>Healthcare / Medical</option>
-          <option>Education / Training</option>
-          <option>Finance / Banking</option>
-          <option>Retail / E-commerce</option>
-          <option>Agriculture / Farming</option>
-          <option>Construction / Real estate</option>
-          <option>Tourism / Hospitality</option>
-          <option>NGO / Development</option>
-          <option>Government / Public sector</option>
-          <option>Media / Entertainment</option>
-          <option>Legal / Professional services</option>
-          <option>Arts / Creative industry</option>
-          <option>Food & Beverage</option>
-          <option>Religious organization</option>
-          <option>Other</option>
-        </select>
-      </div>
-    </div>
-    <div class="card">
-      <div class="card-header">Technical Maturity</div>
-      <div class="field"><label>Does the client have an existing website?</label>
-        <select id="biz-existing" onchange="calcProgress()">
-          <option value="">Select...</option>
-          <option>No — brand new site</option>
-          <option>Yes — full redesign needed</option>
-          <option>Yes — just updates/refresh</option>
-          <option>Yes — migrating platform</option>
-        </select>
-      </div>
-      <div class="field"><label>Technical knowledge of client</label>
-        <select id="biz-tech" onchange="calcProgress()">
-          <option value="">Select...</option>
-          <option>Non-technical — needs guidance on everything</option>
-          <option>Basic — can update content with training</option>
-          <option>Moderate — knows CMS basics</option>
-          <option>Technical — has in-house IT</option>
-        </select>
-      </div>
-      <div class="field"><label>Who will manage the site after launch?</label>
-        <select id="biz-manage" onchange="calcProgress()">
-          <option value="">Select...</option>
-          <option>Freelancer (you) — ongoing retainer</option>
-          <option>Client themselves</option>
-          <option>Client's internal IT team</option>
-          <option>Third-party agency</option>
-          <option>Not decided yet</option>
-        </select>
-      </div>
-      <div class="field"><label>Compliance / Legal Requirements</label>
-        <select id="biz-compliance" onchange="calcProgress()">
-          <option value="">Select...</option>
-          <option>None — general site</option>
-          <option>Privacy policy page needed</option>
-          <option>GDPR compliance (international users)</option>
-          <option>Government accessibility standards</option>
-          <option>Financial / payment regulations</option>
-          <option>Healthcare data privacy</option>
-        </select>
-      </div>
-    </div>
-  </div>
-
-  <div class="divider">Recommended Tier</div>
-  <div class="tier-grid" id="tier-grid"></div>
-
-  <div class="nav-row">
-    <button class="btn btn-ghost" onclick="switchPanel('project')">← Back</button>
-    <button class="btn btn-dark" onclick="switchPanel('features')">Next: Features →</button>
-  </div>
-</div>
-
-<!-- ==================== PANEL 4: FEATURES ==================== -->
-<div class="panel" id="panel-features">
-  <div class="layout-sidebar">
-    <div>
-      <div class="sec-header">
-        <div class="sec-title">Features & Scope</div>
-        <div class="sec-sub">Select all front-end features needed — price updates live</div>
-      </div>
-      <div class="notice notice-amber">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12" y2="16.5" stroke-width="3"/></svg>
-        <p>All prices in ETB, current 2024–2025 Ethiopian market rates. Click any item to toggle.</p>
-      </div>
-      <div class="feature-group"><div class="feature-group-title">Pages & Structure</div><div id="feat-pages"></div></div>
-      <div class="feature-group"><div class="feature-group-title">Design & UX</div><div id="feat-design"></div></div>
-      <div class="feature-group"><div class="feature-group-title">Functionality</div><div id="feat-func"></div></div>
-      <div class="feature-group"><div class="feature-group-title">Content & Media</div><div id="feat-content"></div></div>
-      <div class="feature-group"><div class="feature-group-title">Technical & SEO</div><div id="feat-tech"></div></div>
-    </div>
-    <div>
-      <div class="summary-sticky" id="sidebar-feat">
-        <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--text2);margin-bottom:10px">Live Estimate</div>
-        <div class="summary-total" id="sum-total">0 ETB<small>estimated total</small></div>
-        <hr>
-        <div id="sum-lines"></div>
-        <div class="deposit-box"><div class="d-label">50% Upfront Deposit</div><div class="d-val" id="sum-deposit">0 ETB</div></div>
-        <div class="remaining-line">On delivery: <strong id="sum-remaining">0 ETB</strong></div>
-      </div>
-    </div>
-  </div>
-  <div class="nav-row">
-    <button class="btn btn-ghost" onclick="switchPanel('biz')">← Back</button>
-    <button class="btn btn-dark" onclick="switchPanel('backend')">Next: Backend & CMS →</button>
-  </div>
-</div>
-
-<!-- ==================== PANEL 5: BACKEND & CMS ==================== -->
-<div class="panel" id="panel-backend">
-  <div class="layout-sidebar">
-    <div>
-      <div class="sec-header">
-        <div class="sec-title">Backend & Editable Content</div>
-        <div class="sec-sub">Does the client need a database, user accounts, editable content, or custom admin?</div>
-      </div>
-      <div class="notice notice-blue">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12" y2="16.5" stroke-width="3"/></svg>
-        <p>Backend work significantly increases scope. Only select what the client actually needs. These are in addition to front-end features.</p>
-      </div>
-
-      <div class="feature-group"><div class="feature-group-title">CMS & Editable Content</div><div id="feat-cms"></div></div>
-      <div class="feature-group"><div class="feature-group-title">Database & Data Management</div><div id="feat-db"></div></div>
-      <div class="feature-group"><div class="feature-group-title">User Accounts & Auth</div><div id="feat-auth"></div></div>
-      <div class="feature-group"><div class="feature-group-title">E-commerce & Payments</div><div id="feat-ecom"></div></div>
-      <div class="feature-group"><div class="feature-group-title">API & Integrations</div><div id="feat-api"></div></div>
-      <div class="feature-group"><div class="feature-group-title">Security & Hosting Infrastructure</div><div id="feat-infra"></div></div>
-
-      <div class="card" style="margin-top:1rem">
-        <div class="card-header">Backend Technology Stack Preference</div>
-        <div class="grid-2">
-          <div class="field"><label>Preferred Frontend Framework</label>
-            <select id="bk-frontend" onchange="calcProgress()">
-              <option value="">No preference / your choice</option>
-              <option>HTML / CSS / Vanilla JS</option>
-              <option>React.js</option>
-              <option>Next.js</option>
-              <option>Vue.js</option>
-              <option>Nuxt.js</option>
-              <option>WordPress (theme)</option>
-              <option>Webflow</option>
-            </select>
-          </div>
-          <div class="field"><label>Preferred Backend / Server</label>
-            <select id="bk-backend" onchange="calcProgress()">
-              <option value="">No preference / your choice</option>
-              <option>Node.js + Express</option>
-              <option>Python + Django/Flask</option>
-              <option>PHP + Laravel</option>
-              <option>Firebase (serverless)</option>
-              <option>Supabase (serverless)</option>
-              <option>WordPress CMS</option>
-              <option>Strapi (headless CMS)</option>
-            </select>
-          </div>
-          <div class="field"><label>Database</label>
-            <select id="bk-db" onchange="calcProgress()">
-              <option value="">No preference / your choice</option>
-              <option>PostgreSQL</option>
-              <option>MySQL</option>
-              <option>MongoDB</option>
-              <option>Firebase Firestore</option>
-              <option>Supabase (Postgres)</option>
-              <option>SQLite (simple sites)</option>
-            </select>
-          </div>
-          <div class="field"><label>Hosting Preference</label>
-            <select id="bk-hosting" onchange="calcProgress()">
-              <option value="">No preference</option>
-              <option>Vercel (free tier)</option>
-              <option>Netlify (free tier)</option>
-              <option>DigitalOcean VPS</option>
-              <option>AWS / Google Cloud</option>
-              <option>cPanel shared hosting</option>
-              <option>Ethiopian local server</option>
-              <option>Client already has hosting</option>
-            </select>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div>
-      <div class="summary-sticky">
-        <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--text2);margin-bottom:10px">Live Estimate</div>
-        <div class="summary-total" id="sum-total-bk">0 ETB<small>estimated total</small></div>
-        <hr>
-        <div id="sum-lines-bk"></div>
-        <div class="deposit-box"><div class="d-label">50% Upfront Deposit</div><div class="d-val" id="sum-deposit-bk">0 ETB</div></div>
-        <div class="remaining-line">On delivery: <strong id="sum-remaining-bk">0 ETB</strong></div>
-      </div>
-    </div>
-  </div>
-  <div class="nav-row">
-    <button class="btn btn-ghost" onclick="switchPanel('features')">← Back</button>
-    <button class="btn btn-dark" onclick="switchPanel('pricing')">Next: Pricing →</button>
-  </div>
-</div>
-
-<!-- ==================== PANEL 6: PRICING ==================== -->
-<div class="panel" id="panel-pricing">
-  <div class="layout-sidebar">
-    <div>
-      <div class="sec-header">
-        <div class="sec-title">Pricing & Add-ons</div>
-        <div class="sec-sub">Fine-tune the quote, add extra services, and set payment terms</div>
-      </div>
-      <div class="card" style="margin-bottom:1rem">
-        <div class="card-header">Manual Override (Optional)</div>
-        <div class="notice notice-amber" style="margin-bottom:1rem">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12" y2="16.5" stroke-width="3"/></svg>
-          <p>Features auto-calculate. Override only if you want to set a custom negotiated base price.</p>
-        </div>
-        <div class="grid-2">
-          <div class="field"><label>Manual base price override (ETB) — 0 = use auto</label><input type="number" id="price-override" placeholder="0" value="0" min="0" oninput="calcPricing()"></div>
-          <div class="field"><label>Discount / negotiated reduction (ETB)</label><input type="number" id="price-discount" placeholder="0" value="0" min="0" oninput="calcPricing()"></div>
-        </div>
-      </div>
-      <div class="card" style="margin-bottom:1rem">
-        <div class="card-header">Add-on Services</div>
-        <div id="addon-list"></div>
-      </div>
-      <div class="card" style="margin-bottom:1rem">
-        <div class="card-header">Revision & Support Policy</div>
-        <div class="grid-2">
-          <div class="field"><label>Included revision rounds</label>
-            <select id="revisions" onchange="calcPricing()">
-              <option value="0">0 revisions (extra charge for changes)</option>
-              <option value="1" selected>1 revision round (standard)</option>
-              <option value="2">2 revision rounds</option>
-              <option value="3">3 revision rounds</option>
-              <option value="unlimited">Unlimited (premium only)</option>
-            </select>
-          </div>
-          <div class="field"><label>Post-launch support period</label>
-            <select id="support" onchange="calcPricing()">
-              <option value="none">No support included</option>
-              <option value="7">7 days bug-fix support</option>
-              <option value="14" selected>14 days bug-fix support</option>
-              <option value="30">30 days support (+1,500 ETB)</option>
-              <option value="60">60 days support (+3,500 ETB)</option>
-              <option value="90">90 days support (+6,000 ETB)</option>
-            </select>
-          </div>
-        </div>
-      </div>
-      <div class="card">
-        <div class="card-header">Payment Terms</div>
-        <div class="grid-2">
-          <div class="field"><label>Upfront deposit %</label>
-            <select id="deposit-pct" onchange="calcPricing()">
-              <option value="30">30% upfront</option>
-              <option value="50" selected>50% upfront (standard)</option>
-              <option value="70">70% upfront</option>
-              <option value="100">100% upfront (trusted client)</option>
-            </select>
-          </div>
-          <div class="field"><label>Payment method</label>
-            <select id="payment-method" onchange="calcProgress()">
-              <option value="">Select...</option>
-              <option>CBE Birr</option>
-              <option>Telebirr</option>
-              <option>Cash</option>
-              <option>Bank transfer (CBE)</option>
-              <option>Awash Bank</option>
-              <option>Abyssinia Bank</option>
-              <option>Payoneer (international)</option>
-              <option>Western Union</option>
-            </select>
-          </div>
-          <div class="field"><label>Milestones / Payment schedule</label>
-            <select id="payment-schedule" onchange="calcProgress()">
-              <option value="">Select...</option>
-              <option>2 payments: 50% now + 50% on delivery</option>
-              <option>3 payments: 30% + 40% midway + 30% delivery</option>
-              <option>2 payments: 70% now + 30% on delivery</option>
-              <option>Full payment upfront</option>
-              <option>Monthly retainer</option>
-            </select>
-          </div>
-          <div class="field"><label>Invoice currency</label>
-            <select id="invoice-currency" onchange="calcProgress()">
-              <option value="ETB">ETB (Ethiopian Birr)</option>
-              <option value="USD">USD (Dollar equivalent)</option>
-            </select>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div>
-      <div class="summary-sticky">
-        <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--text2);margin-bottom:10px">Final Quote</div>
-        <div class="summary-total" id="sum-total2">0 ETB<small>total project cost</small></div>
-        <hr>
-        <div id="sum-lines2"></div>
-        <div class="deposit-box" style="margin-top:1rem"><div class="d-label">Upfront Deposit</div><div class="d-val" id="sum-deposit2">0 ETB</div></div>
-        <div class="remaining-line">On delivery:<br><strong id="sum-remaining2" style="font-size:1.1rem">0 ETB</strong></div>
-        <hr>
-        <button class="btn btn-green" style="width:100%;justify-content:center" onclick="switchPanel('export');generatePreview()">
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
-          Export Full Proposal
+      <div class="header-actions">
+        <button class="theme-toggle" onclick="toggleTheme()" title="Toggle dark/light mode">
+          <svg id="theme-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+            stroke-width="2">
+            <circle cx="12" cy="12" r="5" />
+            <path
+              d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42" />
+          </svg>
+        </button>
+        <button class="btn btn-ghost btn-sm" onclick="resetAll()">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="1 4 1 10 7 10" />
+            <path d="M3.51 15a9 9 0 1 0 .49-3.51" />
+          </svg>
+          Reset
+        </button>
+        <button class="btn btn-gold btn-sm" onclick="switchPanel('export');generatePreview()">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+            <polyline points="14 2 14 8 20 8" />
+          </svg>
+          Export Proposal
         </button>
       </div>
     </div>
-  </div>
-   <div class="nav-row">
-    <button class="btn btn-ghost" onclick="switchPanel('pricing')">← Back</button>
-    <button class="btn btn-gold" onclick="switchPanel('export');generatePreview()">Generate Proposal →</button>
-  </div>
-</div>
 
-
-<!-- ==================== PANEL 8: EXPORT ==================== -->
-<div class="panel" id="panel-export">
-  <div class="sec-header">
-    <div class="sec-title">Export Client Proposal</div>
-    <div class="sec-sub">Review, print as professional PDF, or copy to send via Telegram/Email</div>
-  </div>
-  <div class="notice notice-green">
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
-    <p>All data is compiled below. Use "Print / Save as PDF" for a professional formatted document. Use "Download Markdown" to get a .md file, or "Copy" to paste into Telegram or email.</p>
-  </div>
-  <div class="export-area">
-    <div class="export-toolbar">
-      <button class="btn btn-dark btn-sm" onclick="printProposal()">
-        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9V2h12v7"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
-        Print / Save as PDF
-      </button>
-      <button class="btn btn-gold btn-sm" onclick="downloadMarkdown()">
-        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-        Download Markdown
-      </button>
-      <button class="btn btn-ghost btn-sm" onclick="copyMarkdown()">
-        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
-        Copy Markdown
-      </button>
-      <button class="btn btn-ghost btn-sm" onclick="togglePreviewMode()">
-        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-        <span id="preview-toggle-text">Preview</span>
-      </button>
+    <!-- PROGRESS -->
+    <div class="progress-wrap">
+      <div class="progress-meta">
+        <span>Form completion</span>
+        <span class="progress-pct" id="pct-label">0%</span>
+      </div>
+      <div class="progress-bar">
+        <div class="progress-fill" id="prog-fill" style="width:0%"></div>
+      </div>
     </div>
-    <div class="export-content" id="export-preview">Click "Preview" to generate your proposal...</div>
-  </div>
-  <div style="margin-top:1rem">
-    <button class="btn btn-ghost" onclick="switchPanel('pricing')">← Back to Pricing</button>
-  </div>
-</div>
 
-<!-- HIDDEN PRINT TEMPLATE -->
-<div id="pdf-template"></div>
+    <!-- TABS -->
+    <div class="steps-nav">
+      <button class="step-tab active" id="tab-client" onclick="switchPanel('client')"><span
+          class="step-num">1</span>Client Info</button>
+      <button class="step-tab" id="tab-project" onclick="switchPanel('project')"><span
+          class="step-num">2</span>Project</button>
+      <button class="step-tab" id="tab-biz" onclick="switchPanel('biz')"><span class="step-num">3</span>Biz Type &
+        Scale</button>
+      <button class="step-tab" id="tab-features" onclick="switchPanel('features')"><span
+          class="step-num">4</span>Features</button>
+      <button class="step-tab" id="tab-backend" onclick="switchPanel('backend')"><span class="step-num">5</span>Backend
+        & CMS</button>
+      <button class="step-tab" id="tab-pricing" onclick="switchPanel('pricing')"><span
+          class="step-num">6</span>Pricing</button>
+      <button class="step-tab" id="tab-export" onclick="switchPanel('export');generatePreview()"><span
+          class="step-num">7</span>Export</button>
+    </div>
 
-</div><!-- end .app -->
+    <!-- ==================== PANEL 1: CLIENT INFO ==================== -->
+    <div class="panel active" id="panel-client">
+      <div class="sec-header">
+        <div class="sec-title">Client Information</div>
+        <div class="sec-sub">Basic contact and background details about your client</div>
+      </div>
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-header">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+              <circle cx="12" cy="7" r="4" />
+            </svg>
+            Personal Details
+          </div>
+          <div class="field"><label>Full Name</label><input type="text" id="c-name" placeholder="e.g. Abebe Kebede"
+              oninput="calcProgress()"></div>
+          <div class="field"><label>Email Address</label><input type="email" id="c-email" placeholder="client@email.com"
+              oninput="calcProgress()"></div>
+          <div class="field"><label>Phone / Telegram</label><input type="tel" id="c-phone"
+              placeholder="+251 9xx xxx xxxx" oninput="calcProgress()"></div>
+          <div class="field"><label>Location / City</label><input type="text" id="c-city"
+              placeholder="e.g. Dire Dawa, Addis Ababa" oninput="calcProgress()"></div>
+          <div class="field"><label>Preferred Contact Method</label>
+            <select id="c-contact" onchange="calcProgress()">
+              <option value="">Select...</option>
+              <option>Telegram</option>
+              <option>Phone call</option>
+              <option>Email</option>
+              <option>WhatsApp</option>
+              <option>In person</option>
+            </select>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="2" y="3" width="20" height="14" rx="2" />
+              <line x1="8" y1="21" x2="16" y2="21" />
+              <line x1="12" y1="17" x2="12" y2="21" />
+            </svg>
+            Professional Background
+          </div>
+          <div class="field"><label>Profession / Title</label><input type="text" id="c-profession"
+              placeholder="e.g. Software Engineer, Doctor, Artist" oninput="calcProgress()"></div>
+          <div class="field"><label>Organization / Company</label><input type="text" id="c-org"
+              placeholder="e.g. ABC Trading, Self-employed" oninput="calcProgress()"></div>
+          <div class="field"><label>Client Type</label>
+            <select id="c-type" onchange="calcProgress()">
+              <option value="">Select type...</option>
+              <option>Individual / Freelancer</option>
+              <option>Small business owner</option>
+              <option>Medium business</option>
+              <option>Large enterprise</option>
+              <option>NGO / Non-profit</option>
+              <option>Government institution</option>
+              <option>Startup (early stage)</option>
+              <option>Church / Religious org</option>
+              <option>Educational institution</option>
+              <option>Healthcare provider</option>
+              <option>Media / Content creator</option>
+            </select>
+          </div>
+          <div class="field"><label>Budget Expectation</label>
+            <select id="c-budget" onchange="calcProgress()">
+              <option value="">Client's rough budget...</option>
+              <option value="low">Low — Under 10,000 ETB</option>
+              <option value="med">Medium — 10,000–30,000 ETB</option>
+              <option value="high">Standard — 30,000–60,000 ETB</option>
+              <option value="premium">Premium — 60,000+ ETB</option>
+              <option value="unknown">Not disclosed yet</option>
+            </select>
+          </div>
+          <div class="field"><label>How did they find you?</label>
+            <select id="c-source" onchange="calcProgress()">
+              <option value="">Select...</option>
+              <option>Referral / Word of mouth</option>
+              <option>Social media (Instagram/TikTok)</option>
+              <option>LinkedIn</option>
+              <option>Church / Sunday school community</option>
+              <option>University network</option>
+              <option>Telegram channel</option>
+              <option>Cold outreach by client</option>
+              <option>Repeat client</option>
+              <option>Other</option>
+            </select>
+          </div>
+        </div>
+      </div>
+      <div class="card" style="margin-top:1rem">
+        <div class="card-header">Meeting Notes</div>
+        <div class="grid-2">
+          <div class="field"><label>Notes from call / first meeting</label>
+            <textarea id="c-notes"
+              placeholder="Any useful details from your initial conversation, their pain points, goals, concerns..."
+              rows="4" oninput="calcProgress()"></textarea>
+          </div>
+          <div class="field"><label>Urgency / Priority Level</label>
+            <select id="c-urgency" onchange="calcProgress()">
+              <option value="">Select...</option>
+              <option>Not urgent — exploring options</option>
+              <option>Moderate — within 1–2 months</option>
+              <option>Urgent — within 2–3 weeks</option>
+              <option>Very urgent — ASAP (rush applies)</option>
+            </select>
+            <div class="field" style="margin-top:0.75rem"><label>Decision Maker?</label>
+              <select id="c-decision" onchange="calcProgress()">
+                <option value="">Select...</option>
+                <option>Yes — client decides alone</option>
+                <option>Needs approval from partner/boss</option>
+                <option>Committee / Board must approve</option>
+              </select>
+            </div>
+            <div style="margin-top:0.75rem"><label class="field"
+                style="display:block;font-size:12px;font-weight:500;color:var(--text2);margin-bottom:5px">Confidence of
+                closing deal</label>
+              <select id="c-confidence" onchange="calcProgress()">
+                <option value="">Select...</option>
+                <option>High — very likely to proceed</option>
+                <option>Medium — still considering</option>
+                <option>Low — just researching prices</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="nav-row">
+        <div></div>
+        <button class="btn btn-dark" onclick="switchPanel('project')">Next: Project Details →</button>
+      </div>
+    </div>
+
+    <!-- ==================== PANEL 2: PROJECT ==================== -->
+    <div class="panel" id="panel-project">
+      <div class="sec-header">
+        <div class="sec-title">Project Details</div>
+        <div class="sec-sub">Understand the goal, context, and timeline for this website</div>
+      </div>
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-header">Project Overview</div>
+          <div class="field"><label>Project Name / Working Title</label><input type="text" id="p-name"
+              placeholder="e.g. Dr. Abebe Medical Profile Site" oninput="calcProgress()"></div>
+          <div class="field"><label>Website Type</label>
+            <select id="p-type" onchange="calcProgress()">
+              <option value="">Select...</option>
+              <option>Personal profile / portfolio</option>
+              <option>Business landing page</option>
+              <option>Professional CV site</option>
+              <option>Artist / creative portfolio</option>
+              <option>Blog / content site</option>
+              <option>Corporate / organizational site</option>
+              <option>E-commerce (products)</option>
+              <option>NGO / non-profit site</option>
+              <option>Event / conference page</option>
+              <option>Real estate / property listing</option>
+              <option>Restaurant / food business</option>
+              <option>Healthcare / clinic site</option>
+              <option>School / educational site</option>
+              <option>News / media site</option>
+              <option>Government / public institution</option>
+              <option>Booking / appointment site</option>
+              <option>Directory / listing site</option>
+            </select>
+          </div>
+          <div class="field"><label>Primary Goal</label>
+            <select id="p-goal" onchange="calcProgress()">
+              <option value="">Select main goal...</option>
+              <option>Get freelance clients / leads</option>
+              <option>Get job offers</option>
+              <option>Showcase portfolio / work</option>
+              <option>Build online credibility</option>
+              <option>Sell products / services online</option>
+              <option>Accept online bookings / appointments</option>
+              <option>Share knowledge / blog</option>
+              <option>Promote an event</option>
+              <option>Raise donations / funds</option>
+              <option>Provide information to the public</option>
+              <option>Internal staff portal</option>
+            </select>
+          </div>
+          <div class="field"><label>Target Audience</label>
+            <select id="p-audience" onchange="calcProgress()">
+              <option value="">Select...</option>
+              <option>Potential employers / HR</option>
+              <option>Business clients (B2B)</option>
+              <option>General Ethiopian public</option>
+              <option>International audience</option>
+              <option>Local city audience</option>
+              <option>Creative / artistic community</option>
+              <option>Medical / health patients</option>
+              <option>Students / youth</option>
+              <option>Government officials</option>
+              <option>Donors / NGO supporters</option>
+              <option>Retail customers (B2C)</option>
+            </select>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header">Timeline & Style</div>
+          <div class="field">
+            <label>Desired Delivery: <strong id="timeline-val" style="color:var(--accent2)">2 weeks</strong></label>
+            <input type="range" min="1" max="8" value="2" id="p-timeline"
+              oninput="updateTimeline(this.value);calcProgress()">
+            <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--text3);margin-top:4px">
+              <span>3 days</span><span>2 wks</span><span>1 mo</span><span>2 mo</span>
+            </div>
+          </div>
+          <div class="addon-row" style="margin-top:0.75rem;margin-bottom:0.75rem" id="rush-row">
+            <input type="checkbox" id="p-rush" onchange="calcPricing();calcProgress()">
+            <div class="addon-lbl-wrap"><strong>Rush delivery (+30%)</strong> <span class="rush-badge">RUSH</span></div>
+          </div>
+          <div class="field"><label>Design Style Preference</label>
+            <select id="p-style" onchange="calcProgress()">
+              <option value="">Select...</option>
+              <option>Clean & minimal</option>
+              <option>Bold & creative</option>
+              <option>Corporate / professional</option>
+              <option>Dark / futuristic</option>
+              <option>Colorful / playful</option>
+              <option>Elegant / luxury</option>
+              <option>Earthy / African-inspired</option>
+              <option>Religious / traditional</option>
+              <option>Modern medical / clinical</option>
+              <option>Client to decide</option>
+            </select>
+          </div>
+          <div class="field"><label>Preferred Language(s)</label>
+            <select id="p-lang" onchange="calcProgress()">
+              <option value="">Select...</option>
+              <option>English only</option>
+              <option>Amharic only</option>
+              <option>English + Amharic</option>
+              <option>English + Afaan Oromo</option>
+              <option>English + Tigrinya</option>
+              <option>Multilingual (3+)</option>
+            </select>
+          </div>
+          <div class="field"><label>Number of Pages / Sections (estimated)</label>
+            <select id="p-pages" onchange="calcProgress()">
+              <option value="">Select...</option>
+              <option value="1-3">1–3 pages (simple)</option>
+              <option value="4-6">4–6 pages (standard)</option>
+              <option value="7-10">7–10 pages (medium)</option>
+              <option value="11-20">11–20 pages (large)</option>
+              <option value="20+">20+ pages (complex / enterprise)</option>
+            </select>
+          </div>
+        </div>
+      </div>
+      <div class="card" style="margin-top:1rem">
+        <div class="card-header">References & Content</div>
+        <div class="grid-2">
+          <div class="field"><label>Websites they like (URLs or descriptions)</label>
+            <textarea id="p-refs"
+              placeholder="e.g. apple.com — I like the clean layout. Or 'a dark theme with smooth animations'" rows="3"
+              oninput="calcProgress()"></textarea>
+          </div>
+          <div>
+            <label style="display:block;font-size:12px;font-weight:500;color:var(--text2);margin-bottom:8px">Content
+              ready? (check all that apply)</label>
+            <div class="content-checks" id="content-checks">
+              <div class="content-check" onclick="toggleContentCheck(this,'cnt-photo')"><input type="checkbox"
+                  id="cnt-photo" onchange="calcProgress()"><span>Profile photo / images</span></div>
+              <div class="content-check" onclick="toggleContentCheck(this,'cnt-bio')"><input type="checkbox"
+                  id="cnt-bio" onchange="calcProgress()"><span>Bio / About text</span></div>
+              <div class="content-check" onclick="toggleContentCheck(this,'cnt-portfolio')"><input type="checkbox"
+                  id="cnt-portfolio" onchange="calcProgress()"><span>Portfolio / work samples</span></div>
+              <div class="content-check" onclick="toggleContentCheck(this,'cnt-cv')"><input type="checkbox" id="cnt-cv"
+                  onchange="calcProgress()"><span>CV / resume</span></div>
+              <div class="content-check" onclick="toggleContentCheck(this,'cnt-domain')"><input type="checkbox"
+                  id="cnt-domain" onchange="calcProgress()"><span>Domain name purchased</span></div>
+              <div class="content-check" onclick="toggleContentCheck(this,'cnt-logo')"><input type="checkbox"
+                  id="cnt-logo" onchange="calcProgress()"><span>Logo / brand assets</span></div>
+              <div class="content-check" onclick="toggleContentCheck(this,'cnt-products')"><input type="checkbox"
+                  id="cnt-products" onchange="calcProgress()"><span>Product info / pricing</span></div>
+              <div class="content-check" onclick="toggleContentCheck(this,'cnt-hosting')"><input type="checkbox"
+                  id="cnt-hosting" onchange="calcProgress()"><span>Hosting account</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="nav-row">
+        <button class="btn btn-ghost" onclick="switchPanel('client')">← Back</button>
+        <button class="btn btn-dark" onclick="switchPanel('biz')">Next: Business Type →</button>
+      </div>
+    </div>
+
+    <!-- ==================== PANEL 3: BIZ TYPE ==================== -->
+    <div class="panel" id="panel-biz">
+      <div class="sec-header">
+        <div class="sec-title">Business Type & Scale</div>
+        <div class="sec-sub">This affects which features are recommended and overall pricing range</div>
+      </div>
+      <div class="notice notice-blue">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10" />
+          <line x1="12" y1="8" x2="12" y2="12" />
+          <line x1="12" y1="16" x2="12" y2="16.5" stroke-width="3" />
+        </svg>
+        <p>Select the type that best describes the client's business. This helps auto-suggest the right features and
+          tier.</p>
+      </div>
+      <div class="biz-grid" id="biz-type-grid"></div>
+
+      <div class="divider">Scale & Complexity</div>
+
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-header">Organization Size</div>
+          <div class="field"><label>Team / Staff Size</label>
+            <select id="biz-size" onchange="calcProgress()">
+              <option value="">Select...</option>
+              <option value="solo">Solo / 1 person</option>
+              <option value="micro">Micro — 2–5 people</option>
+              <option value="small">Small — 6–20 people</option>
+              <option value="medium">Medium — 21–100 people</option>
+              <option value="large">Large — 100+ people</option>
+            </select>
+          </div>
+          <div class="field"><label>Annual Revenue / Budget Range</label>
+            <select id="biz-revenue" onchange="calcProgress()">
+              <option value="">Select...</option>
+              <option>Pre-revenue / startup</option>
+              <option>Under 500,000 ETB/year</option>
+              <option>500K – 2M ETB/year</option>
+              <option>2M – 10M ETB/year</option>
+              <option>10M+ ETB/year</option>
+              <option>NGO / grant-funded</option>
+              <option>Government / public funded</option>
+            </select>
+          </div>
+          <div class="field"><label>Industry / Sector</label>
+            <select id="biz-sector" onchange="calcProgress()">
+              <option value="">Select...</option>
+              <option>Technology / IT</option>
+              <option>Healthcare / Medical</option>
+              <option>Education / Training</option>
+              <option>Finance / Banking</option>
+              <option>Retail / E-commerce</option>
+              <option>Agriculture / Farming</option>
+              <option>Construction / Real estate</option>
+              <option>Tourism / Hospitality</option>
+              <option>NGO / Development</option>
+              <option>Government / Public sector</option>
+              <option>Media / Entertainment</option>
+              <option>Legal / Professional services</option>
+              <option>Arts / Creative industry</option>
+              <option>Food & Beverage</option>
+              <option>Religious organization</option>
+              <option>Other</option>
+            </select>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header">Technical Maturity</div>
+          <div class="field"><label>Does the client have an existing website?</label>
+            <select id="biz-existing" onchange="calcProgress()">
+              <option value="">Select...</option>
+              <option>No — brand new site</option>
+              <option>Yes — full redesign needed</option>
+              <option>Yes — just updates/refresh</option>
+              <option>Yes — migrating platform</option>
+            </select>
+          </div>
+          <div class="field"><label>Technical knowledge of client</label>
+            <select id="biz-tech" onchange="calcProgress()">
+              <option value="">Select...</option>
+              <option>Non-technical — needs guidance on everything</option>
+              <option>Basic — can update content with training</option>
+              <option>Moderate — knows CMS basics</option>
+              <option>Technical — has in-house IT</option>
+            </select>
+          </div>
+          <div class="field"><label>Who will manage the site after launch?</label>
+            <select id="biz-manage" onchange="calcProgress()">
+              <option value="">Select...</option>
+              <option>Freelancer (you) — ongoing retainer</option>
+              <option>Client themselves</option>
+              <option>Client's internal IT team</option>
+              <option>Third-party agency</option>
+              <option>Not decided yet</option>
+            </select>
+          </div>
+          <div class="field"><label>Compliance / Legal Requirements</label>
+            <select id="biz-compliance" onchange="calcProgress()">
+              <option value="">Select...</option>
+              <option>None — general site</option>
+              <option>Privacy policy page needed</option>
+              <option>GDPR compliance (international users)</option>
+              <option>Government accessibility standards</option>
+              <option>Financial / payment regulations</option>
+              <option>Healthcare data privacy</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div class="divider">Recommended Tier</div>
+      <div class="tier-grid" id="tier-grid"></div>
+
+      <div class="nav-row">
+        <button class="btn btn-ghost" onclick="switchPanel('project')">← Back</button>
+        <button class="btn btn-dark" onclick="switchPanel('features')">Next: Features →</button>
+      </div>
+    </div>
+
+    <!-- ==================== PANEL 4: FEATURES ==================== -->
+    <div class="panel" id="panel-features">
+      <div class="layout-sidebar">
+        <div>
+          <div class="sec-header">
+            <div class="sec-title">Features & Scope</div>
+            <div class="sec-sub">Select all front-end features needed — price updates live</div>
+          </div>
+          <div class="notice notice-amber">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10" />
+              <line x1="12" y1="8" x2="12" y2="12" />
+              <line x1="12" y1="16" x2="12" y2="16.5" stroke-width="3" />
+            </svg>
+            <p>All prices in ETB, current 2025–2026 Ethiopian market rates. Click any item to toggle.</p>
+          </div>
+          <div class="feature-group">
+            <div class="feature-group-title">Pages & Structure</div>
+            <div id="feat-pages"></div>
+          </div>
+          <div class="feature-group">
+            <div class="feature-group-title">Design & UX</div>
+            <div id="feat-design"></div>
+          </div>
+          <div class="feature-group">
+            <div class="feature-group-title">Functionality</div>
+            <div id="feat-func"></div>
+          </div>
+          <div class="feature-group">
+            <div class="feature-group-title">Content & Media</div>
+            <div id="feat-content"></div>
+          </div>
+          <div class="feature-group">
+            <div class="feature-group-title">Technical & SEO</div>
+            <div id="feat-tech"></div>
+          </div>
+        </div>
+        <div>
+          <div class="summary-sticky" id="sidebar-feat">
+            <div
+              style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--text2);margin-bottom:10px">
+              Live Estimate</div>
+            <div class="summary-total" id="sum-total">0 ETB<small>estimated total</small></div>
+            <hr>
+            <div id="sum-lines"></div>
+            <div class="deposit-box">
+              <div class="d-label">50% Upfront Deposit</div>
+              <div class="d-val" id="sum-deposit">0 ETB</div>
+            </div>
+            <div class="remaining-line">On delivery: <strong id="sum-remaining">0 ETB</strong></div>
+          </div>
+        </div>
+      </div>
+      <div class="nav-row">
+        <button class="btn btn-ghost" onclick="switchPanel('biz')">← Back</button>
+        <button class="btn btn-dark" onclick="switchPanel('backend')">Next: Backend & CMS →</button>
+      </div>
+    </div>
+
+    <!-- ==================== PANEL 5: BACKEND & CMS ==================== -->
+    <div class="panel" id="panel-backend">
+      <div class="layout-sidebar">
+        <div>
+          <div class="sec-header">
+            <div class="sec-title">Backend & Editable Content</div>
+            <div class="sec-sub">Does the client need a database, user accounts, editable content, or custom admin?
+            </div>
+          </div>
+          <div class="notice notice-blue">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10" />
+              <line x1="12" y1="8" x2="12" y2="12" />
+              <line x1="12" y1="16" x2="12" y2="16.5" stroke-width="3" />
+            </svg>
+            <p>Backend work significantly increases scope. Only select what the client actually needs. These are in
+              addition to front-end features.</p>
+          </div>
+
+          <div class="feature-group">
+            <div class="feature-group-title">CMS & Editable Content</div>
+            <div id="feat-cms"></div>
+          </div>
+          <div class="feature-group">
+            <div class="feature-group-title">Database & Data Management</div>
+            <div id="feat-db"></div>
+          </div>
+          <div class="feature-group">
+            <div class="feature-group-title">User Accounts & Auth</div>
+            <div id="feat-auth"></div>
+          </div>
+          <div class="feature-group">
+            <div class="feature-group-title">E-commerce & Payments</div>
+            <div id="feat-ecom"></div>
+          </div>
+          <div class="feature-group">
+            <div class="feature-group-title">API & Integrations</div>
+            <div id="feat-api"></div>
+          </div>
+          <div class="feature-group">
+            <div class="feature-group-title">Security & Hosting Infrastructure</div>
+            <div id="feat-infra"></div>
+          </div>
+
+          <div class="card" style="margin-top:1rem">
+            <div class="card-header">Backend Technology Stack Preference</div>
+            <div class="grid-2">
+              <div class="field"><label>Preferred Frontend Framework</label>
+                <select id="bk-frontend" onchange="calcProgress()">
+                  <option value="">No preference / your choice</option>
+                  <option>HTML / CSS / Vanilla JS</option>
+                  <option>React.js</option>
+                  <option>Next.js</option>
+                  <option>Vue.js</option>
+                  <option>Nuxt.js</option>
+                  <option>WordPress (theme)</option>
+                  <option>Webflow</option>
+                </select>
+              </div>
+              <div class="field"><label>Preferred Backend / Server</label>
+                <select id="bk-backend" onchange="calcProgress()">
+                  <option value="">No preference / your choice</option>
+                  <option>Node.js + Express</option>
+                  <option>Python + Django/Flask</option>
+                  <option>PHP + Laravel</option>
+                  <option>Firebase (serverless)</option>
+                  <option>Supabase (serverless)</option>
+                  <option>WordPress CMS</option>
+                  <option>Strapi (headless CMS)</option>
+                </select>
+              </div>
+              <div class="field"><label>Database</label>
+                <select id="bk-db" onchange="calcProgress()">
+                  <option value="">No preference / your choice</option>
+                  <option>PostgreSQL</option>
+                  <option>MySQL</option>
+                  <option>MongoDB</option>
+                  <option>Firebase Firestore</option>
+                  <option>Supabase (Postgres)</option>
+                  <option>SQLite (simple sites)</option>
+                </select>
+              </div>
+              <div class="field"><label>Hosting Preference</label>
+                <select id="bk-hosting" onchange="calcProgress()">
+                  <option value="">No preference</option>
+                  <option>Vercel (free tier)</option>
+                  <option>Netlify (free tier)</option>
+                  <option>DigitalOcean VPS</option>
+                  <option>AWS / Google Cloud</option>
+                  <option>cPanel shared hosting</option>
+                  <option>Ethiopian local server</option>
+                  <option>Client already has hosting</option>
+                </select>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div>
+          <div class="summary-sticky">
+            <div
+              style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--text2);margin-bottom:10px">
+              Live Estimate</div>
+            <div class="summary-total" id="sum-total-bk">0 ETB<small>estimated total</small></div>
+            <hr>
+            <div id="sum-lines-bk"></div>
+            <div class="deposit-box">
+              <div class="d-label">50% Upfront Deposit</div>
+              <div class="d-val" id="sum-deposit-bk">0 ETB</div>
+            </div>
+            <div class="remaining-line">On delivery: <strong id="sum-remaining-bk">0 ETB</strong></div>
+          </div>
+        </div>
+      </div>
+      <div class="nav-row">
+        <button class="btn btn-ghost" onclick="switchPanel('features')">← Back</button>
+        <button class="btn btn-dark" onclick="switchPanel('pricing')">Next: Pricing →</button>
+      </div>
+    </div>
+
+    <!-- ==================== PANEL 6: PRICING ==================== -->
+    <div class="panel" id="panel-pricing">
+      <div class="layout-sidebar">
+        <div>
+          <div class="sec-header">
+            <div class="sec-title">Pricing & Add-ons</div>
+            <div class="sec-sub">Fine-tune the quote, add extra services, and set payment terms</div>
+          </div>
+          <div class="card" style="margin-bottom:1rem">
+            <div class="card-header">Manual Override (Optional)</div>
+            <div class="notice notice-amber" style="margin-bottom:1rem">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10" />
+                <line x1="12" y1="8" x2="12" y2="12" />
+                <line x1="12" y1="16" x2="12" y2="16.5" stroke-width="3" />
+              </svg>
+              <p>Features auto-calculate. Override only if you want to set a custom negotiated base price.</p>
+            </div>
+            <div class="grid-2">
+              <div class="field"><label>Manual base price override (ETB) — 0 = use auto</label><input type="number"
+                  id="price-override" placeholder="0" value="0" min="0" oninput="calcPricing()"></div>
+              <div class="field"><label>Discount / negotiated reduction (ETB)</label><input type="number"
+                  id="price-discount" placeholder="0" value="0" min="0" oninput="calcPricing()"></div>
+            </div>
+          </div>
+          <div class="card" style="margin-bottom:1rem">
+            <div class="card-header">Add-on Services</div>
+            <div id="addon-list"></div>
+          </div>
+          <div class="card" style="margin-bottom:1rem">
+            <div class="card-header">Revision & Support Policy</div>
+            <div class="grid-2">
+              <div class="field"><label>Included revision rounds</label>
+                <select id="revisions" onchange="calcPricing()">
+                  <option value="0">0 revisions (extra charge for changes)</option>
+                  <option value="1" selected>1 revision round (standard)</option>
+                  <option value="2">2 revision rounds</option>
+                  <option value="3">3 revision rounds</option>
+                  <option value="unlimited">Unlimited (premium only)</option>
+                </select>
+              </div>
+              <div class="field"><label>Post-launch support period</label>
+                <select id="support" onchange="calcPricing()">
+                  <option value="none">No support included</option>
+                  <option value="7">7 days bug-fix support</option>
+                  <option value="14" selected>14 days bug-fix support</option>
+                  <option value="30">30 days support (+1,500 ETB)</option>
+                  <option value="60">60 days support (+3,500 ETB)</option>
+                  <option value="90">90 days support (+6,000 ETB)</option>
+                </select>
+              </div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-header">Payment Terms</div>
+            <div class="grid-2">
+              <div class="field"><label>Upfront deposit %</label>
+                <select id="deposit-pct" onchange="calcPricing()">
+                  <option value="30">30% upfront</option>
+                  <option value="50" selected>50% upfront (standard)</option>
+                  <option value="70">70% upfront</option>
+                  <option value="100">100% upfront (trusted client)</option>
+                </select>
+              </div>
+              <div class="field"><label>Payment method</label>
+                <select id="payment-method" onchange="calcProgress()">
+                  <option value="">Select...</option>
+                  <option>CBE Birr</option>
+                  <option>Telebirr</option>
+                  <option>Cash</option>
+                  <option>Bank transfer (CBE)</option>
+                  <option>Awash Bank</option>
+                  <option>Abyssinia Bank</option>
+                  <option>Payoneer (international)</option>
+                  <option>Western Union</option>
+                </select>
+              </div>
+              <div class="field"><label>Milestones / Payment schedule</label>
+                <select id="payment-schedule" onchange="calcProgress()">
+                  <option value="">Select...</option>
+                  <option>2 payments: 50% now + 50% on delivery</option>
+                  <option>3 payments: 30% + 40% midway + 30% delivery</option>
+                  <option>2 payments: 70% now + 30% on delivery</option>
+                  <option>Full payment upfront</option>
+                  <option>Monthly retainer</option>
+                </select>
+              </div>
+              <div class="field"><label>Invoice currency</label>
+                <select id="invoice-currency" onchange="calcProgress()">
+                  <option value="ETB">ETB (Ethiopian Birr)</option>
+                  <option value="USD">USD (Dollar equivalent)</option>
+                </select>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div>
+          <div class="summary-sticky">
+            <div
+              style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--text2);margin-bottom:10px">
+              Final Quote</div>
+            <div class="summary-total" id="sum-total2">0 ETB<small>total project cost</small></div>
+            <hr>
+            <div id="sum-lines2"></div>
+            <div class="deposit-box" style="margin-top:1rem">
+              <div class="d-label">Upfront Deposit</div>
+              <div class="d-val" id="sum-deposit2">0 ETB</div>
+            </div>
+            <div class="remaining-line">On delivery:<br><strong id="sum-remaining2" style="font-size:1.1rem">0
+                ETB</strong></div>
+            <hr>
+            <button class="btn btn-green" style="width:100%;justify-content:center"
+              onclick="switchPanel('export');generatePreview()">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                <polyline points="14 2 14 8 20 8" />
+              </svg>
+              Export Full Proposal
+            </button>
+          </div>
+        </div>
+      </div>
+      <div class="nav-row">
+        <button class="btn btn-ghost" onclick="switchPanel('pricing')">← Back</button>
+        <button class="btn btn-gold" onclick="switchPanel('export');generatePreview()">Generate Proposal →</button>
+      </div>
+    </div>
+
+
+    <!-- ==================== PANEL 8: EXPORT ==================== -->
+    <div class="panel" id="panel-export">
+      <div class="sec-header">
+        <div class="sec-title">Export Client Proposal</div>
+        <div class="sec-sub">Review, print as professional PDF, or copy to send via Telegram/Email</div>
+      </div>
+      <div class="notice notice-green">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+          <polyline points="22 4 12 14.01 9 11.01" />
+        </svg>
+        <p>All data is compiled below. Use "Print / Save as PDF" for a professional formatted document. Use "Download
+          Markdown" to get a .md file, or "Copy" to paste into Telegram or email.</p>
+      </div>
+      <div class="export-area">
+        <div class="export-toolbar">
+          <button class="btn btn-dark btn-sm" onclick="printProposal()">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M6 9V2h12v7" />
+              <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2" />
+              <rect x="6" y="14" width="12" height="8" />
+            </svg>
+            Print / Save as PDF
+          </button>
+          <button class="btn btn-gold btn-sm" onclick="downloadMarkdown()">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+              <polyline points="7 10 12 15 17 10" />
+              <line x1="12" y1="15" x2="12" y2="3" />
+            </svg>
+            Download Markdown
+          </button>
+          <button class="btn btn-ghost btn-sm" onclick="copyMarkdown()">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="9" y="9" width="13" height="13" rx="2" />
+              <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
+            </svg>
+            Copy Markdown
+          </button>
+          <button class="btn btn-ghost btn-sm" onclick="togglePreviewMode()">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+              <circle cx="12" cy="12" r="3" />
+            </svg>
+            <span id="preview-toggle-text">Preview</span>
+          </button>
+        </div>
+        <div class="export-content" id="export-preview">Click "Preview" to generate your proposal...</div>
+      </div>
+      <div style="margin-top:1rem">
+        <button class="btn btn-ghost" onclick="switchPanel('pricing')">← Back to Pricing</button>
+      </div>
+    </div>
+
+    <!-- HIDDEN PRINT TEMPLATE -->
+    <div id="pdf-template"></div>
+
+  </div><!-- end .app -->
 
 
 
-<script src="app.js"></script>
-<script src="pdf-generator.js"></script>
+  <script src="app.js"></script>
+  <script src="pdf-generator.js"></script>
 </body>
+
 </html>
